@@ -1,4 +1,4 @@
-# FITLOG LOCAL WI-FI SERVER
+# CREATIO LOCAL WI-FI SERVER
 $port = 8080
 $ip = "10.0.0.104"
 
@@ -8,7 +8,7 @@ $listener.Prefixes.Add("http://${ip}:${port}/")
 
 try {
   $listener.Start()
-  Write-Host "Servidor FitLog rodando na rede Wi-Fi!"
+  Write-Host "Servidor Creatio rodando na rede Wi-Fi!"
   Write-Host "Acesse no seu celular: http://${ip}:${port}/"
 } catch {
   Write-Host "Aviso ao iniciar listener: $_"

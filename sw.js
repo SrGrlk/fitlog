@@ -1,13 +1,14 @@
 /* ==========================================================================
-   FITLOG SERVICE WORKER — 100% OFFLINE CACHING
+   CREATIO SERVICE WORKER — 100% OFFLINE CACHING
    ========================================================================== */
 
-const CACHE_NAME = 'fitlog-cache-v6';
+const CACHE_NAME = 'creatio-cache-v8';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './manifest.json',
+  './manifest.json?v=3',
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',

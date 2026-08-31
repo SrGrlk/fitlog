@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FitLog — Log Book de Musculação Offline</title>
-  <meta name="description" content="Log Book digital de musculação 100% offline para registro rápido de séries, cargas, repetições e progressão de treino.">
+  <title>Creatio — Log Book de Musculação</title>
+  <meta name="description" content="Creatio — Log Book digital de musculação 100% offline para registro rápido de séries, cargas, repetições e progressão de treino.">
+  <meta name="application-name" content="Creatio">
+  <meta name="apple-mobile-web-app-title" content="Creatio">
   <meta name="theme-color" content="#000000">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=3">
   <!-- Google Fonts: Permanent Marker (Títulos Sketch/Grunge) & Inter (Números, Cargas, Textos) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,9 +30,10 @@
     <!-- TOP HEADER -->
     <header class="app-header">
       <div class="header-content">
-        <div class="logo-area">
+        <div class="logo-area" style="display: flex; align-items: center; gap: 8px;">
+          <img src="favicon.png" alt="Creatio" style="width: 26px; height: 26px; border-radius: 4px; object-fit: cover;">
           <h1 class="logo-title">
-            <span class="sketch-title">FIGHT</span> <span class="sketch-title brand-red">CLUB</span>
+            <span class="sketch-title">CREATIO</span>
             <span class="badge-offline">LOGBOOK</span>
           </h1>
         </div>
@@ -343,10 +346,10 @@
         </div>
 
         <div class="settings-group hero-card" style="border-color: var(--color-accent);">
-          <h3>📲 Instalar Aplicativo no Celular</h3>
-          <p class="meta-text">Instale o FitLog diretamente na tela inicial do seu celular para usar como um aplicativo nativo offline.</p>
+          <h3>Instalar Aplicativo no Celular</h3>
+          <p class="meta-text">Instale o Creatio diretamente na tela inicial do seu celular para usar como um aplicativo nativo offline.</p>
           <button id="btn-install-pwa-settings" class="btn btn-primary btn-md btn-block">
-            📲 Baixar / Instalar App no Celular
+            Baixar / Instalar App no Celular
           </button>
         </div>
 
@@ -514,7 +517,7 @@
         <button class="modal-close btn-icon">✕</button>
       </div>
       <div class="modal-body" style="gap: 12px;">
-        <p>Siga os passos abaixo no navegador do seu celular para instalar o ícone do <strong>FIGHT LOG</strong> na tela inicial:</p>
+        <p>Siga os passos abaixo no navegador do seu celular para instalar o ícone do <strong>Creatio</strong> na tela inicial:</p>
 
         <div class="section-card" style="background-color: var(--bg-input);">
           <strong style="color: var(--color-accent); display: block; margin-bottom: 4px;">No Android (Google Chrome)</strong>
@@ -945,6 +948,11 @@ const aiAssistant = new AIWorkoutAssistant();
 const App = {
   currentView: 'view-home', activeSession: null, activeTimerInterval: null, deferredInstallPrompt: null,
   init() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js?v=8')
+        .then(reg => { reg.update(); console.log('[Creatio SW] Atualizado'); })
+        .catch(err => console.error('[Creatio SW] Erro:', err));
+    }
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.deferredInstallPrompt = e; });
     this.bindNavigation(); this.bindEvents(); this.applySettings(); this.checkActiveSession(); this.renderCurrentView();
   },
