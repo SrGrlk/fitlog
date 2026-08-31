@@ -2,12 +2,16 @@
    FITLOG SERVICE WORKER — 100% OFFLINE CACHING
    ========================================================================== */
 
-const CACHE_NAME = 'fitlog-cache-v5';
+const CACHE_NAME = 'fitlog-cache-v6';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png',
+  './favicon.png',
   './js/seed-data.js',
   './js/db.js',
   './js/timer.js',

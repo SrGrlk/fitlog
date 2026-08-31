@@ -5,230 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FitLog — Log Book de Musculação Offline</title>
   <meta name="description" content="Log Book digital de musculação 100% offline para registro rápido de séries, cargas, repetições e progressão de treino.">
-  <meta name="theme-color" content="#121214">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.json">
-  <style>
-/* FITLOG DESIGN SYSTEM & INLINE STYLES */
-:root {
-  --bg-primary: #121214;
-  --bg-surface: #1C1C21;
-  --bg-card: #24242B;
-  --bg-card-hover: #2E2E37;
-  --bg-input: #17171A;
-  --border-color: #33333D;
-  --border-highlight: #4A4A57;
-  --text-main: #F2F2F7;
-  --text-muted: #8E8E93;
-  --text-sub: #AEAEB2;
-  --color-accent: #CCFF00;
-  --color-accent-hover: #B5E600;
-  --color-accent-text: #000000;
-  --color-primary: #00E5FF;
-  --color-success: #30D158;
-  --color-danger: #FF453A;
-  --color-warning: #FF9F0A;
-  --font-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: monospace, 'JetBrains Mono', Consolas;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 16px rgba(204, 255, 0, 0.25);
-  --nav-height: 64px;
-  --header-height: 56px;
-}
-[data-theme="light"] {
-  --bg-primary: #F2F2F7;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #E5E5EA;
-  --bg-input: #EFEFF4;
-  --border-color: #D1D1D6;
-  --border-highlight: #C7C7CC;
-  --text-main: #1C1C1E;
-  --text-muted: #6C6C70;
-  --text-sub: #3A3A3C;
-  --color-accent: #10B981;
-  --color-accent-hover: #059669;
-  --color-accent-text: #FFFFFF;
-  --color-primary: #0284C7;
-  --color-success: #10B981;
-  --color-danger: #EF4444;
-  --color-warning: #F59E0B;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 12px rgba(16, 185, 129, 0.2);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
-input, textarea, select { user-select: text; }
-html, body { width: 100%; height: 100%; background-color: var(--bg-primary); color: var(--text-main); font-family: var(--font-main); font-size: 15px; line-height: 1.4; overflow: hidden; }
-#app-container { display: flex; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; background-color: var(--bg-primary); border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
-.mono { font-family: var(--font-mono); }
-h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
-h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
-.app-header { height: var(--header-height); background-color: var(--bg-surface); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 16px; z-index: 50; }
-.header-content { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-.logo-area { display: flex; align-items: center; gap: 8px; }
-.logo-icon { font-size: 1.3rem; }
-.logo-title { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
-.badge-offline { font-size: 0.6rem; padding: 2px 6px; background-color: var(--color-success); color: #000; border-radius: 4px; font-weight: 800; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-main); font-weight: 700; border-radius: var(--radius-md); border: none; cursor: pointer; transition: all 0.15s ease; min-height: 44px; padding: 0 16px; }
-.btn-xl { min-height: 56px; font-size: 1.1rem; width: 100%; border-radius: var(--radius-lg); }
-.btn-lg { min-height: 48px; font-size: 1rem; }
-.btn-md { min-height: 40px; font-size: 0.9rem; }
-.btn-sm { min-height: 34px; padding: 0 12px; font-size: 0.82rem; }
-.btn-xs { min-height: 28px; padding: 0 8px; font-size: 0.75rem; border-radius: var(--radius-sm); }
-.btn-primary { background-color: var(--color-accent); color: var(--color-accent-text); box-shadow: var(--shadow-glow); }
-.btn-primary:active { background-color: var(--color-accent-hover); transform: scale(0.98); }
-.btn-accent { background-color: var(--color-primary); color: #000; }
-.btn-success { background-color: var(--color-success); color: #000; }
-.btn-danger { background-color: var(--color-danger); color: #FFF; }
-.btn-ghost-danger { background-color: rgba(255, 69, 58, 0.15); color: var(--color-danger); }
-.btn-outline { background-color: transparent; border: 1px solid var(--border-highlight); color: var(--text-main); }
-.btn-outline:active { background-color: var(--bg-card-hover); }
-.btn-ghost { background-color: transparent; color: var(--text-muted); }
-.btn-icon { background: transparent; border: none; color: var(--text-main); font-size: 1.2rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; }
-.btn-icon:active { background-color: var(--bg-card-hover); }
-.btn-block { width: 100%; }
-.banner-active { background-color: rgba(0, 229, 255, 0.15); border-bottom: 1px solid var(--color-primary); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; animation: slideDown 0.2s ease; }
-.banner-info { display: flex; align-items: center; gap: 10px; }
-.pulse-dot { width: 10px; height: 10px; background-color: var(--color-primary); border-radius: 50%; box-shadow: 0 0 8px var(--color-primary); animation: pulse 1.5s infinite; }
-@keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
-.banner-buttons { display: flex; gap: 8px; }
-#main-content { flex: 1; overflow-y: auto; padding: 16px; position: relative; }
-.view-screen { display: none; flex-direction: column; gap: 16px; }
-.view-screen.active { display: flex; }
-.section-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px; }
-.hero-card { border-color: var(--color-accent); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(204, 255, 0, 0.05) 100%); display: flex; flex-direction: column; gap: 12px; }
-.sub-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; color: var(--color-accent); }
-.hero-routine { font-size: 1.5rem; margin-top: 4px; }
-.meta-text { font-size: 0.85rem; color: var(--text-muted); }
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.stat-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-.stat-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
-.stat-value { font-size: 1.2rem; color: var(--text-main); }
-.stat-sub { font-size: 0.75rem; color: var(--text-sub); }
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-.section-desc { font-size: 0.85rem; color: var(--text-muted); }
-.cards-list { display: flex; flex-direction: column; gap: 12px; }
-.routine-item-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-.routine-item-card:active { background-color: var(--bg-card-hover); }
-.routine-item-info strong { font-size: 1.1rem; display: block; }
-.routine-item-info p { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
-.workout-bar-sticky { position: sticky; top: 0; z-index: 40; background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-md); }
-.workout-header-info { display: flex; align-items: center; justify-content: space-between; }
-.workout-timer-badge { background-color: var(--bg-input); padding: 4px 10px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
-.repeat-banner { background-color: rgba(204, 255, 0, 0.1); border: 1px dashed var(--color-accent); border-radius: var(--radius-md); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; gap: 8px; }
-.exercise-workout-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-.ex-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.ex-card-title { font-size: 1.15rem; font-weight: 800; }
-.ex-muscle-badge { font-size: 0.7rem; padding: 2px 8px; background-color: var(--bg-input); color: var(--color-primary); border-radius: 4px; font-weight: 700; }
-.ex-last-perf-box { background-color: var(--bg-input); border-left: 3px solid var(--color-primary); padding: 6px 10px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
-.ex-last-perf-box strong { color: var(--color-primary); }
-.sets-table { width: 100%; border-collapse: collapse; }
-.sets-table th { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; padding-bottom: 6px; text-align: center; }
-.sets-table td { padding: 4px 2px; text-align: center; }
-.set-row { transition: background 0.15s; }
-.set-row.completed-row { background-color: rgba(48, 209, 88, 0.08); }
-.set-num-badge { font-weight: 800; font-size: 0.9rem; color: var(--text-sub); }
-.input-num-wrapper { display: flex; align-items: center; justify-content: center; gap: 2px; }
-.input-set-field { width: 60px; height: 42px; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-main); font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; text-align: center; }
-.input-set-field:focus { outline: none; border-color: var(--color-accent); background-color: var(--bg-surface); }
-.btn-step { width: 28px; height: 42px; background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; font-size: 1rem; border-radius: var(--radius-sm); cursor: pointer; }
-.btn-step:active { background-color: var(--border-highlight); }
-.btn-check-set { width: 42px; height: 42px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background-color: var(--bg-input); color: var(--text-muted); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.btn-check-set.checked { background-color: var(--color-success); color: #000; border-color: var(--color-success); }
-.search-box { width: 100%; }
-.form-input, .form-select, .form-textarea { width: 100%; min-height: 46px; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; color: var(--text-main); font-family: var(--font-main); font-size: 0.95rem; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--color-accent); }
-.chips-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-.chip-btn { background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 14px; border-radius: var(--radius-xl); font-size: 0.82rem; font-weight: 700; white-space: nowrap; cursor: pointer; }
-.chip-btn.active { background-color: var(--color-accent); color: var(--color-accent-text); border-color: var(--color-accent); }
-.exercise-item-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-.exercise-item-card:active { background-color: var(--bg-card-hover); }
-.ex-title-row { display: flex; align-items: center; gap: 8px; }
-.ex-title-row strong { font-size: 1.05rem; }
-.ex-group-tag { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
-.history-view-tabs { display: flex; background-color: var(--bg-input); border-radius: var(--radius-sm); padding: 2px; }
-.tab-btn { border: none; background: transparent; color: var(--text-muted); padding: 4px 12px; font-size: 0.8rem; font-weight: 700; border-radius: var(--radius-sm); cursor: pointer; }
-.tab-btn.active { background-color: var(--bg-card); color: var(--text-main); }
-.history-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-.history-card-header { display: flex; justify-content: space-between; align-items: center; }
-.history-date { font-size: 0.8rem; font-weight: 800; color: var(--color-primary); }
-.history-routine-title { font-size: 1.1rem; font-weight: 800; }
-.history-summary-line { font-size: 0.82rem; color: var(--text-muted); }
-.history-ex-list { border-top: 1px solid var(--border-color); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
-.history-ex-row { display: flex; justify-content: space-between; }
-.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.cal-day-cell { aspect-ratio: 1; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; position: relative; }
-.cal-day-cell.has-workout { background-color: rgba(204, 255, 0, 0.15); border-color: var(--color-accent); color: var(--color-accent); font-weight: 800; }
-.cal-workout-check { font-size: 0.65rem; position: absolute; bottom: 2px; }
-.pdf-uploader-card { padding: 24px 16px; }
-.pdf-drop-zone { border: 2px dashed var(--border-highlight); border-radius: var(--radius-lg); padding: 24px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; background-color: var(--bg-input); }
-.drop-icon { font-size: 2.5rem; }
-.hidden-file-input { display: none; }
-.label-file-button { cursor: pointer; margin-top: 4px; }
-.processing-status { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; font-weight: 700; }
-.spinner { animation: spin 1s linear infinite; display: inline-block; }
-@keyframes spin { 100% { transform: rotate(360deg); } }
-.settings-group { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-.setting-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.setting-text strong { display: block; font-size: 0.95rem; }
-.setting-text span { font-size: 0.8rem; color: var(--text-muted); }
-.setting-item select { width: 140px; }
-.backup-buttons { display: flex; flex-direction: column; gap: 8px; }
-.danger-zone { border-color: rgba(255, 69, 58, 0.4); }
-.danger-title { color: var(--color-danger); }
-.rest-timer-widget { position: absolute; bottom: calc(var(--nav-height) + 12px); right: 16px; background-color: var(--bg-surface); border: 2px solid var(--color-accent); box-shadow: var(--shadow-md), var(--shadow-glow); border-radius: var(--radius-xl); padding: 8px 16px; display: flex; align-items: center; gap: 14px; z-index: 90; animation: popUp 0.2s ease; }
-@keyframes popUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.timer-display-area { display: flex; align-items: center; gap: 8px; }
-.timer-clock { font-size: 1.4rem; font-weight: 800; color: var(--color-accent); }
-.timer-actions { display: flex; gap: 6px; }
-.bottom-nav { height: var(--nav-height); background-color: var(--bg-surface); border-top: 1px solid var(--border-color); display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; z-index: 80; }
-.nav-item { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 0; }
-.nav-icon { font-size: 1.25rem; }
-.nav-label { font-size: 0.65rem; font-weight: 700; }
-.nav-item.active { color: var(--color-accent); }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
-.modal-card { background-color: var(--bg-card); border: 1px solid var(--border-highlight); border-radius: var(--radius-lg); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; box-shadow: var(--shadow-md); }
-.modal-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
-.modal-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-.records-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.record-box { background-color: var(--bg-input); border-radius: var(--radius-sm); padding: 8px; text-align: center; }
-.record-box .label { font-size: 0.65rem; color: var(--text-muted); display: block; }
-.record-box .value { font-size: 0.9rem; color: var(--color-accent); }
-.modal-notes-text { font-size: 0.85rem; color: var(--text-sub); font-style: italic; }
-.modal-history-scroll { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-.selected-exercises-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
-.selected-ex-item { background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; }
-.celebration-icon { font-size: 3.5rem; margin-bottom: 8px; }
-.summary-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-.summary-box { background-color: var(--bg-input); border-radius: var(--radius-md); padding: 12px; }
-.summary-box .label { font-size: 0.7rem; color: var(--text-muted); display: block; }
-.summary-box .value { font-size: 1.3rem; color: var(--color-accent); }
-.chart-card { display: flex; flex-direction: column; gap: 12px; }
-.chart-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.chart-container-wrapper { width: 100%; height: 180px; background-color: var(--bg-input); border-radius: var(--radius-md); border: 1px solid var(--border-color); padding: 8px; display: flex; align-items: center; justify-content: center; }
-#progression-chart-svg { width: 100%; height: 100%; }
-.chart-legend { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); }
-.volume-bars-container { display: flex; flex-direction: column; gap: 10px; }
-.volume-bar-item { display: flex; flex-direction: column; gap: 4px; }
-.volume-bar-info { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; }
-.volume-bar-track { height: 10px; background-color: var(--bg-input); border-radius: var(--radius-xl); overflow: hidden; border: 1px solid var(--border-color); }
-.volume-bar-fill { height: 100%; background: linear-gradient(90deg, var(--color-primary), var(--color-accent)); border-radius: var(--radius-xl); transition: width 0.4s ease; }
-.hidden { display: none !important; }
-  </style>
-  <!-- Google Fonts: Inter & JetBrains Mono for numbers -->
+  <!-- Google Fonts: Permanent Marker (Títulos Sketch/Grunge) & Inter (Números, Cargas, Textos) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <!-- pdf.js from CDN fallback or local script for offline PDF text extraction -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>
@@ -244,15 +29,18 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
     <header class="app-header">
       <div class="header-content">
         <div class="logo-area">
-          <span class="logo-icon">⚡</span>
-          <h1 class="logo-title">FitLOG <span class="badge-offline">OFFLINE</span></h1>
+          <h1 class="logo-title">
+            <span class="sketch-title">FIGHT</span> <span class="sketch-title brand-red">CLUB</span>
+            <span class="badge-offline">LOGBOOK</span>
+          </h1>
         </div>
-        <div class="header-actions" style="display: flex; align-items: center; gap: 8px;">
-          <button id="btn-install-pwa" class="btn btn-xs btn-primary" style="font-size: 0.75rem;">
-            📲 Instalar App
+        <div class="header-actions">
+          <button id="btn-install-pwa" class="btn btn-xs btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Instalar</span>
           </button>
           <button id="btn-theme-toggle" class="btn-icon" title="Alternar Tema" aria-label="Alternar Tema">
-            <span class="icon-theme">🌙</span>
+            <span class="icon-theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
           </button>
         </div>
       </div>
@@ -280,17 +68,17 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
       <section id="view-home" class="view-screen active">
         <div class="section-card hero-card">
           <div class="hero-header">
-            <span class="sub-title">PRÓXIMO TREINO SUGERIDO</span>
+            <span class="sub-title">TREINO DE HOJE</span>
             <h2 id="next-workout-title" class="hero-routine">Carregando treinos...</h2>
           </div>
           <p id="next-workout-meta" class="meta-text">Baseado no seu histórico recente</p>
           <div class="hero-actions" style="display: flex; flex-direction: column; gap: 8px;">
             <button id="btn-start-quick-workout" class="btn btn-primary btn-xl">
-              <span class="btn-icon-lg">▶</span>
               <span>INICIAR TREINO</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
             <button class="btn btn-md btn-accent nav-to" data-target="view-ai-assistant">
-              🤖 Entrada Rápida com IA (Texto Livre)
+              Entrada Rápida via IA (Texto Livre)
             </button>
           </div>
         </div>
@@ -309,7 +97,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
         </div>
 
         <div class="section-header">
-          <h3>MINHAS ROTINAS DE TREINO</h3>
+          <h3>ÚLTIMOS TREINOS</h3>
           <button class="btn btn-sm btn-outline nav-to" data-target="view-routines">+ Criar Rotina</button>
         </div>
 
@@ -325,21 +113,21 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
           <div class="workout-header-info">
             <h2 id="active-workout-name">Treino A</h2>
             <div class="workout-timer-badge">
-              <span class="icon">⏱️</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               <span id="active-timer-display" class="mono">00:00</span>
             </div>
           </div>
           <div class="workout-top-actions">
             <button id="btn-finish-workout" class="btn btn-success btn-block">
-              ✓ FINALIZAR TREINO (<span id="active-total-sets">0</span> séries)
+              FINALIZAR TREINO (<span id="active-total-sets">0</span> SÉRIES)
             </button>
           </div>
         </div>
 
         <!-- Banner com a funcionalidade de "REPETIR ÚLTIMO TREINO" -->
         <div id="repeat-last-banner" class="repeat-banner">
-          <span>💡 Deseja carregar as cargas do seu último treino como referência?</span>
-          <button id="btn-apply-repeat-last" class="btn btn-xs btn-accent">Carregar Cargas Anteriores</button>
+          <span>Deseja carregar as cargas do último treino como referência?</span>
+          <button id="btn-apply-repeat-last" class="btn btn-xs btn-accent">Carregar Cargas</button>
         </div>
 
         <div id="active-exercises-container" class="active-exercises-list">
@@ -355,7 +143,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
       <!-- 3. TELA LOG BOOK / HISTÓRICO -->
       <section id="view-history" class="view-screen">
         <div class="section-header">
-          <h2>HISTÓRICO DE TREINOS</h2>
+          <h2 class="sketch-title">CONSTÂNCIA</h2>
           <div class="history-view-tabs">
             <button id="btn-tab-list" class="tab-btn active">Lista</button>
             <button id="btn-tab-calendar" class="tab-btn">Calendário</button>
@@ -367,7 +155,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
           <div class="search-box">
             <input type="text" id="input-history-search" class="form-input" placeholder="Pesquisar por treino ou exercício...">
           </div>
-          <div id="history-items-list" class="cards-list">
+          <div id="history-items-list" class="cards-list" style="margin-top: 10px;">
             <!-- Itens de histórico -->
           </div>
         </div>
@@ -375,12 +163,16 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
         <!-- Visão em Calendário -->
         <div id="history-calendar-container" class="hidden">
           <div class="calendar-header">
-            <button id="btn-cal-prev" class="btn-icon">◀</button>
+            <button id="btn-cal-prev" class="btn-icon" title="Mês anterior">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
             <h3 id="cal-month-year">Agosto 2026</h3>
-            <button id="btn-cal-next" class="btn-icon">▶</button>
+            <button id="btn-cal-next" class="btn-icon" title="Próximo mês">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
           </div>
           <div class="calendar-weekdays">
-            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
           </div>
           <div id="calendar-days-grid" class="calendar-grid">
             <!-- Dias do mês -->
@@ -388,17 +180,16 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
         </div>
       </section>
 
-
       <!-- 4. TELA DASHBOARD DE EVOLUÇÃO & PROGRESSÃO INTERATIVA -->
       <section id="view-dashboard" class="view-screen">
         <div class="section-header">
-          <h2>DASHBOARD DE EVOLUÇÃO</h2>
+          <h2 class="sketch-title">PROGRESSO</h2>
         </div>
         <p class="section-desc">Acompanhe visualmente sua progressão de cargas e recordes por exercício.</p>
 
         <!-- Seletor de Exercício para Gráfico -->
         <div class="section-card">
-          <label for="select-dashboard-exercise" style="font-weight: 700; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">SELECIONE O EXERCÍCIO</label>
+          <label for="select-dashboard-exercise" style="font-family: var(--font-heading); font-weight: 800; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px;">SELECIONE O EXERCÍCIO</label>
           <select id="select-dashboard-exercise" class="form-select">
             <!-- Exercícios com histórico -->
           </select>
@@ -412,7 +203,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
               <h3 id="dash-ex-trend" style="color: var(--color-accent); margin-top: 2px;">↑ Progressão de Carga</h3>
             </div>
             <div class="chart-badge">
-              <span id="dash-ex-pr-badge" class="mono" style="font-size: 1.1rem; font-weight: 800; color: var(--color-primary);">0 kg PR</span>
+              <span id="dash-ex-pr-badge" class="mono" style="font-size: 1.1rem; font-weight: 800; color: var(--color-accent);">0 kg PR</span>
             </div>
           </div>
 
@@ -424,7 +215,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
           </div>
 
           <div class="chart-legend">
-            <span>📅 Histórico de sessões recentes</span>
+            <span>Histórico de sessões recentes</span>
             <span class="mono" id="dash-ex-date-range">Nenhum registro</span>
           </div>
         </div>
@@ -439,7 +230,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
           <div class="stat-card">
             <span class="stat-label">ESTIMATIVA 1RM</span>
             <strong id="dash-stat-1rm" class="stat-value mono">0 kg</strong>
-            <span class="stat-sub">Fórmula de Epley</span>
+            <span id="dash-stat-1rm" class="stat-sub">Fórmula de Epley</span>
           </div>
         </div>
 
@@ -493,9 +284,9 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
         <p class="section-desc">Crie e personalize suas fichas de treino (Treino A, B, C, D...).</p>
 
         <!-- CARD DE CRIAÇÃO RÁPIDA DE TREINO COM IA -->
-        <div class="section-card hero-card" style="border-color: var(--color-primary); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 229, 255, 0.08) 100%); margin-bottom: 16px;">
+        <div class="section-card hero-card" style="margin-bottom: 16px;">
           <div class="hero-header">
-            <span class="sub-title" style="color: var(--color-primary);">✨ CRIAR TREINO COM IA (TEXTO LIVRE)</span>
+            <span class="sub-title">CRIAR TREINO COM IA (TEXTO LIVRE)</span>
             <h3 style="margin-top: 4px;">Gerar Ficha Instantaneamente</h3>
           </div>
           <div class="form-group" style="margin: 8px 0;">
@@ -504,7 +295,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
                       placeholder="Digite os exercícios e séries:&#10;Ex: Supino reto 4x10, supino inclinado 3x8, crucifixo 3x12, triceps pulley 4x10"></textarea>
           </div>
           <button id="btn-generate-routine-ai" class="btn btn-accent btn-md btn-block">
-            ✨ Processar e Salvar Ficha de Treino
+            Processar e Salvar Ficha de Treino
           </button>
         </div>
 
@@ -603,14 +394,14 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
           
           <div class="backup-buttons">
             <button id="btn-export-backup-json" class="btn btn-outline btn-block">
-              📥 Exportar Backup Completo (JSON)
+              Exportar Backup Completo (JSON)
             </button>
             <button id="btn-export-history-csv" class="btn btn-outline btn-block">
-              📊 Exportar Histórico em Planilha (CSV)
+              Exportar Histórico em Planilha (CSV)
             </button>
             
             <label class="btn btn-accent btn-block label-file-button">
-              📤 Importar Arquivo de Backup (JSON)
+              Importar Arquivo de Backup (JSON)
               <input type="file" id="input-import-backup-json" accept=".json" class="hidden-file-input">
             </label>
           </div>
@@ -619,13 +410,15 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
         <div class="settings-group danger-zone">
           <h3 class="danger-title">Zona de Risco</h3>
           <button id="btn-reset-database" class="btn btn-danger btn-block">
-            ⚠️ Redefinir Banco de Dados Local
+            Redefinir Banco de Dados Local
           </button>
         </div>
+      </section>
+
       <!-- 8. TELA IA - ENTRADA RÁPIDA POR TEXTO LIVRE -->
       <section id="view-ai-assistant" class="view-screen">
         <div class="section-header">
-          <h2>🤖 ASSISTENTE DE IA DE ENTRADA RÁPIDA</h2>
+          <h2 class="sketch-title">ASSISTENTE IA</h2>
         </div>
         <p class="section-desc">Digite ou cole seus treinos em linguagem natural. A IA reconhece exercícios, cargas e séries instantaneamente.</p>
 
@@ -636,7 +429,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
                       placeholder="Ex: Supino reto 4x10 40kg, supino inclinado 3x8 30kg, triceps pulley 3x12 25kg&#10;ou: Leg press 4x12 180kg, cadeira extensora 3x15 45kg"></textarea>
           </div>
           <button id="btn-ai-parse" class="btn btn-primary btn-block" style="margin-top: 10px;">
-            ✨ Processar Treino com IA Offline
+            Processar Treino com IA Offline
           </button>
         </div>
 
@@ -650,13 +443,13 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
 
           <div class="backup-buttons">
             <button id="btn-ai-start-now" class="btn btn-xl btn-primary">
-              🏋️ INICIAR COMO TREINO ATIVO AGORA
+              INICIAR COMO TREINO ATIVO AGORA
             </button>
             <button id="btn-ai-save-routine" class="btn btn-md btn-outline">
-              💾 Salvar como Ficha Permanente
+              Salvar como Ficha Permanente
             </button>
             <button id="btn-ai-save-history" class="btn btn-md btn-accent">
-              📋 Registrar Direto no Histórico
+              Registrar Direto no Histórico
             </button>
           </div>
         </div>
@@ -668,7 +461,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
     <!-- FLOATING REST TIMER WIDGET -->
     <div id="floating-rest-timer" class="rest-timer-widget hidden">
       <div class="timer-display-area">
-        <span class="timer-icon">⏳</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         <span id="timer-clock" class="timer-clock mono">01:30</span>
       </div>
       <div class="timer-actions">
@@ -680,32 +473,32 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
 
     <!-- BOTTOM NAVIGATION BAR -->
     <nav class="bottom-nav">
-      <button class="nav-item active" data-target="view-home">
-        <span class="nav-icon">🏋️</span>
-        <span class="nav-label">Treinar</span>
-      </button>
-      <button class="nav-item" data-target="view-dashboard">
-        <span class="nav-icon">📈</span>
-        <span class="nav-label">Evolução</span>
-      </button>
-      <button class="nav-item" data-target="view-history">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">Log Book</span>
-      </button>
-      <button class="nav-item" data-target="view-exercises">
-        <span class="nav-icon">💪</span>
-        <span class="nav-label">Exercícios</span>
-      </button>
-      <button class="nav-item" data-target="view-routines">
-        <span class="nav-icon">✏️</span>
+      <button class="nav-item active" data-target="view-home" title="Treinar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5v14M18 5v14M2 9v6M22 9v6M6 12h12"/></svg>
         <span class="nav-label">Treinos</span>
       </button>
-      <button class="nav-item" data-target="view-import-pdf">
-        <span class="nav-icon">📄</span>
+      <button class="nav-item" data-target="view-dashboard" title="Progresso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+        <span class="nav-label">Progresso</span>
+      </button>
+      <button class="nav-item" data-target="view-history" title="Constância">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span class="nav-label">Constância</span>
+      </button>
+      <button class="nav-item" data-target="view-exercises" title="Exercícios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle></svg>
+        <span class="nav-label">Exercícios</span>
+      </button>
+      <button class="nav-item" data-target="view-routines" title="Fichas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        <span class="nav-label">Fichas</span>
+      </button>
+      <button class="nav-item" data-target="view-import-pdf" title="PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
         <span class="nav-label">PDF</span>
       </button>
-      <button class="nav-item" data-target="view-settings">
-        <span class="nav-icon">⚙️</span>
+      <button class="nav-item" data-target="view-settings" title="Ajustes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         <span class="nav-label">Ajustes</span>
       </button>
     </nav>
@@ -717,14 +510,14 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
   <div id="modal-install-instructions" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>📲 Como Instalar no Celular</h3>
+        <h3>Como Instalar no Celular</h3>
         <button class="modal-close btn-icon">✕</button>
       </div>
       <div class="modal-body" style="gap: 12px;">
-        <p>Siga os passos abaixo no navegador do seu celular para instalar o ícone do <strong>FitLog ⚡</strong> na tela inicial:</p>
+        <p>Siga os passos abaixo no navegador do seu celular para instalar o ícone do <strong>FIGHT LOG</strong> na tela inicial:</p>
 
         <div class="section-card" style="background-color: var(--bg-input);">
-          <strong style="color: var(--color-accent); display: block; margin-bottom: 4px;">🤖 No Android (Google Chrome)</strong>
+          <strong style="color: var(--color-accent); display: block; margin-bottom: 4px;">No Android (Google Chrome)</strong>
           <ol style="margin-left: 20px; font-size: 0.88rem; display: flex; flex-direction: column; gap: 4px;">
             <li>Toque nos <strong>3 pontinhos</strong> (⋮) no canto superior direito do Chrome.</li>
             <li>Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à Tela de Início"</strong>.</li>
@@ -733,7 +526,7 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
         </div>
 
         <div class="section-card" style="background-color: var(--bg-input);">
-          <strong style="color: var(--color-primary); display: block; margin-bottom: 4px;">🍎 No iPhone (Safari)</strong>
+          <strong style="color: var(--color-accent); display: block; margin-bottom: 4px;">No iPhone (Safari)</strong>
           <ol style="margin-left: 20px; font-size: 0.88rem; display: flex; flex-direction: column; gap: 4px;">
             <li>Toque no botão de <strong>Compartilhar</strong> (ícone de quadrado com seta para cima).</li>
             <li>Role as opções e toque em <strong>"Adicionar à Tela de Início"</strong>.</li>
@@ -860,10 +653,12 @@ h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; } h4 { font-size: 0.95rem; }
 
   <!-- MODAL: CONFIRMAÇÃO DE CONCLUSÃO DE TREINO -->
   <div id="modal-workout-summary" class="modal-overlay hidden">
-    <div class="modal-card text-center">
-      <div class="celebration-icon">🎉</div>
-      <h2>TREINO CONCLUÍDO!</h2>
-      <p id="summary-routine-name" class="subtitle">Treino A — Peito / Tríceps</p>
+    <div class="modal-card text-center" style="text-align: center;">
+      <div class="celebration-icon" style="display: flex; justify-content: center; margin: 12px 0;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <h2 class="sketch-title">TREINO CONCLUÍDO!</h2>
+      <p id="summary-routine-name" class="subtitle" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Treino A — Peito / Tríceps</p>
 
       <div class="summary-stats-grid">
         <div class="summary-box">
@@ -1163,7 +958,12 @@ const App = {
   },
   applySettings() {
     const s = db.getSettings(); document.documentElement.setAttribute('data-theme', s.theme || 'dark');
-    const icon = document.querySelector('.icon-theme'); if (icon) icon.textContent = s.theme === 'dark' ? '🌙' : '☀️';
+    const icon = document.querySelector('.icon-theme');
+    if (icon) {
+      icon.innerHTML = s.theme === 'dark'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+    }
     const u = document.getElementById('select-unit'); if (u) u.value = s.weightUnit || 'kg';
     const t = document.getElementById('select-theme'); if (t) t.value = s.theme || 'dark';
     const r = document.getElementById('select-default-rest'); if (r) r.value = s.restTimerDefault || 90;
@@ -1231,8 +1031,17 @@ const App = {
     const list = document.getElementById('home-routines-list'); list.innerHTML = '';
     routines.forEach(routine => {
       const card = document.createElement('div'); card.className = 'routine-item-card';
-      card.innerHTML = `<div class="routine-item-info"><strong>${routine.name}</strong><p>${routine.muscleFocus || routine.exerciseIds.length + ' exercícios'}</p></div><button class="btn btn-sm btn-primary">INICIAR ▶</button>`;
-      card.addEventListener('click', () => this.startNewWorkout(routine.id)); list.appendChild(card);
+      card.innerHTML = `
+        <div class="routine-item-info">
+          <strong>${routine.name}</strong>
+          <p>${routine.muscleFocus || routine.exerciseIds.length + ' exercícios'}</p>
+        </div>
+        <button class="btn btn-sm btn-primary">
+          <span>INICIAR</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>`;
+      card.addEventListener('click', () => this.startNewWorkout(routine.id));
+      list.appendChild(card);
     });
   },
   renderActiveWorkout() {
@@ -1258,7 +1067,32 @@ const App = {
             <td><button class="btn-check-set ${set.completed?'checked':''}" onclick="App.toggleSetCheck(${exIdx},${setIdx})">${set.completed?'✓':'○'}</button></td>
           </tr>`;
       });
-      card.innerHTML = `<div class="ex-card-header"><div><h3 class="ex-card-title">${entry.exerciseName}</h3><span class="ex-muscle-badge">${entry.muscleGroup}</span></div><button class="btn-icon" onclick="App.openExerciseDetailModal('${entry.exerciseId}')">📊</button></div><div class="ex-last-perf-box"><span>${lastPerfHtml}</span></div><table class="sets-table"><thead><tr><th>SÉRIE</th><th>CARGA (${settings.weightUnit})</th><th>REPS</th><th>STATUS</th></tr></thead><tbody>${setsRows}</tbody></table><div style="display:flex;justify-content:space-between;margin-top:8px;"><button class="btn btn-xs btn-outline" onclick="App.addSetToExercise(${exIdx})">+ ADICIONAR SÉRIE</button>${entry.sets.length>1?`<button class="btn btn-xs btn-ghost-danger" onclick="App.removeSetFromExercise(${exIdx})">Remover Série</button>`:''}</div>`;
+      card.innerHTML = `
+        <div class="ex-card-header">
+          <div>
+            <h3 class="ex-card-title">${entry.exerciseName}</h3>
+            <span class="ex-muscle-badge">${entry.muscleGroup}</span>
+          </div>
+          <button class="btn-icon" onclick="App.openExerciseDetailModal('${entry.exerciseId}')" title="Histórico do Exercício">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          </button>
+        </div>
+        <div class="ex-last-perf-box"><span>${lastPerfHtml}</span></div>
+        <table class="sets-table">
+          <thead>
+            <tr>
+              <th>SÉRIE</th>
+              <th>CARGA (${settings.weightUnit})</th>
+              <th>REPS</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>${setsRows}</tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;">
+          <button class="btn btn-xs btn-outline" onclick="App.addSetToExercise(${exIdx})">+ ADICIONAR SÉRIE</button>
+          ${entry.sets.length>1?`<button class="btn btn-xs btn-ghost-danger" onclick="App.removeSetFromExercise(${exIdx})">Remover Série</button>`:''}
+        </div>`;
       container.appendChild(card);
     });
     document.getElementById('active-total-sets').textContent = completedSetsTotal;
@@ -1303,13 +1137,26 @@ const App = {
   },
   drawSVGChart(svgId, points) {
     const svg = document.getElementById(svgId); if (!svg) return; svg.innerHTML = '';
-    if (points.length === 0) { svg.innerHTML = `<text x="250" y="105" text-anchor="middle" fill="#8E8E93" font-size="14">Nenhum treino registrado ainda</text>`; return; }
-    if (points.length === 1) { svg.innerHTML = `<circle cx="250" cy="100" r="10" fill="#CCFF00" /><text x="250" y="70" text-anchor="middle" fill="#FFF" font-size="16" font-weight="bold">${points[0].weight} kg</text>`; return; }
-    const weights = points.map(p => p.weight), minW = Math.min(...weights) * 0.8, maxW = Math.max(...weights) * 1.2 || 10;
+    if (points.length === 0) {
+      svg.innerHTML = `<text x="250" y="105" text-anchor="middle" fill="#8A8A8A" font-family="'Permanent Marker', cursive, sans-serif" font-size="14" letter-spacing="0.05em">NENHUM TREINO REGISTRADO AINDA</text>`;
+      return;
+    }
+    if (points.length === 1) {
+      svg.innerHTML = `<circle cx="250" cy="100" r="8" fill="#E00000" /><text x="250" y="70" text-anchor="middle" fill="#FFFFFF" font-family="'Inter', sans-serif" font-size="16" font-weight="700">${points[0].weight} kg</text>`;
+      return;
+    }
+    const weights = points.map(p => p.weight), minW = Math.min(...weights) * 0.85, maxW = Math.max(...weights) * 1.15 || 10;
     const width = 500, height = 200, paddingX = 40, paddingY = 30;
-    const coords = points.map((p, i) => ({ x: paddingX + (i / (points.length - 1)) * (width - 2 * paddingX), y: height - paddingY - (((p.weight - minW) / (maxW - minW || 1)) * (height - 2 * paddingY)), weight: p.weight }));
+    const coords = points.map((p, i) => ({
+      x: paddingX + (i / (points.length - 1)) * (width - 2 * paddingX),
+      y: height - paddingY - (((p.weight - minW) / (maxW - minW || 1)) * (height - 2 * paddingY)),
+      weight: p.weight
+    }));
     const pts = coords.map(c => `${c.x},${c.y}`).join(' ');
-    svg.innerHTML = `<polyline points="${pts}" fill="none" stroke="#CCFF00" stroke-width="4" stroke-linecap="round" />` + coords.map(c => `<circle cx="${c.x}" cy="${c.y}" r="6" fill="#00E5FF" /><text x="${c.x}" y="${c.y - 12}" text-anchor="middle" fill="#FFF" font-size="11" font-weight="bold">${c.weight}k</text>`).join('');
+    svg.innerHTML = `
+      <polyline points="${pts}" fill="none" stroke="#E00000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      ${coords.map(c => `<circle cx="${c.x}" cy="${c.y}" r="5" fill="#E00000" stroke="#000000" stroke-width="2" /><text x="${c.x}" y="${c.y - 12}" text-anchor="middle" fill="#FFFFFF" font-family="'Inter', sans-serif" font-size="11" font-weight="700">${c.weight}k</text>`).join('')}
+    `;
   },
   renderMuscleVolumeBars() {
     const history = db.getHistory(), container = document.getElementById('muscle-volume-bars'); container.innerHTML = '';
@@ -1330,7 +1177,20 @@ const App = {
     h.forEach(session => {
       const d = new Date(session.endTime || session.startTime); const card = document.createElement('div'); card.className = 'history-card';
       let exRows = ''; session.exerciseEntries.forEach(e => { const valid = e.sets.filter(s => s.reps > 0); if (valid.length > 0) exRows += `<div class="history-ex-row"><strong>${e.exerciseName}</strong><span class="mono">${valid.map(s => `${s.weight}×${s.reps}`).join(', ')}</span></div>`; });
-      card.innerHTML = `<div class="history-card-header"><div><span class="history-date">${d.toLocaleDateString('pt-BR')} • ${d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span><h3 class="history-routine-title">${session.routineName}</h3></div><button class="btn-icon" onclick="App.deleteHistory('${session.id}')">🗑️</button></div><div class="history-summary-line"><span>${session.exerciseEntries.length} exercícios</span> • <span>${session.totalSets} séries</span> • <strong class="mono">${session.totalVolume.toLocaleString('pt-BR')} ${settings.weightUnit}</strong></div><div class="history-ex-list">${exRows}</div>`;
+      card.innerHTML = `
+        <div class="history-card-header">
+          <div>
+            <span class="history-date">${d.toLocaleDateString('pt-BR')} • ${d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span>
+            <h3 class="history-routine-title">${session.routineName}</h3>
+          </div>
+          <button class="btn-icon" onclick="App.deleteHistory('${session.id}')" title="Excluir treino">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+        <div class="history-summary-line">
+          <span>${session.exerciseEntries.length} exercícios</span> • <span>${session.totalSets} séries</span> • <strong class="mono">${session.totalVolume.toLocaleString('pt-BR')} ${settings.weightUnit}</strong>
+        </div>
+        <div class="history-ex-list">${exRows}</div>`;
       list.appendChild(card);
     });
     this.renderCalendarGrid();
@@ -1339,11 +1199,18 @@ const App = {
   renderCalendarGrid() {
     const grid = document.getElementById('calendar-days-grid'); grid.innerHTML = '';
     const now = new Date(), daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(), firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-    const history = db.getHistory(), workoutDays = new Set(); history.forEach(s => { const d = new Date(s.endTime || s.startTime); if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) workoutDays.add(d.getDate()); });
-    for (let i = 0; i < firstDay; i++) { const blank = document.createElement('div'); blank.className = 'cal-day-cell blank'; grid.appendChild(blank); }
+    const history = db.getHistory(), workoutDays = new Set();
+    history.forEach(s => {
+      const d = new Date(s.endTime || s.startTime);
+      if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) workoutDays.add(d.getDate());
+    });
+    for (let i = 0; i < firstDay; i++) {
+      const blank = document.createElement('div'); blank.className = 'cal-day-cell blank'; grid.appendChild(blank);
+    }
     for (let day = 1; day <= daysInMonth; day++) {
       const cell = document.createElement('div'), has = workoutDays.has(day);
-      cell.className = `cal-day-cell ${has ? 'has-workout' : ''}`; cell.innerHTML = `<span>${day}</span>${has ? '<span class="cal-workout-check">✓</span>' : ''}`;
+      cell.className = `cal-day-cell ${has ? 'has-workout' : ''}`;
+      cell.innerHTML = `<span>${day}</span>`;
       grid.appendChild(cell);
     }
   },
@@ -1354,8 +1221,14 @@ const App = {
     const container = document.getElementById('exercise-catalog-list'); container.innerHTML = '';
     exercises.forEach(ex => {
       const card = document.createElement('div'); card.className = 'exercise-item-card';
-      card.innerHTML = `<div><div class="ex-title-row"><strong>${ex.name}</strong></div><span class="ex-group-tag">${ex.muscleGroup}</span></div><button class="btn btn-sm btn-outline">Evolução 📊</button>`;
-      card.addEventListener('click', () => this.openExerciseDetailModal(ex.id)); container.appendChild(card);
+      card.innerHTML = `
+        <div>
+          <div class="ex-title-row"><strong>${ex.name}</strong></div>
+          <span class="ex-group-tag">${ex.muscleGroup}</span>
+        </div>
+        <button class="btn btn-sm btn-outline">Evolução</button>`;
+      card.addEventListener('click', () => this.openExerciseDetailModal(ex.id));
+      container.appendChild(card);
     });
   },
   openExerciseDetailModal(exId) {
@@ -1379,7 +1252,17 @@ const App = {
     const routines = db.getRoutines(), container = document.getElementById('routines-management-list'); container.innerHTML = '';
     routines.forEach(routine => {
       const card = document.createElement('div'); card.className = 'section-card'; card.style.display = 'flex'; card.style.justifyContent = 'space-between'; card.style.alignItems = 'center';
-      card.innerHTML = `<div><h3>${routine.name}</h3><p class="meta-text">${routine.exerciseIds.length} exercícios</p></div><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-outline" onclick="App.duplicateRoutine('${routine.id}')">Duplicar</button><button class="btn btn-sm btn-ghost-danger" onclick="App.deleteRoutine('${routine.id}')">🗑️</button></div>`;
+      card.innerHTML = `
+        <div>
+          <h3>${routine.name}</h3>
+          <p class="meta-text">${routine.exerciseIds.length} exercícios</p>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm btn-outline" onclick="App.duplicateRoutine('${routine.id}')">Duplicar</button>
+          <button class="btn btn-sm btn-ghost-danger" onclick="App.deleteRoutine('${routine.id}')" title="Excluir">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>`;
       container.appendChild(card);
     });
   },
