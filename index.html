@@ -716,17 +716,17 @@
 
   <!-- MODAL: SELECIONAR EXERCÍCIO (REUTILIZÁVEL) -->
   <div id="modal-select-exercise" class="modal-overlay hidden">
-    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
-      <div class="modal-header">
+    <div class="modal-card modal-picker-card">
+      <div class="modal-header modal-header-compact">
         <h3 id="modal-select-exercise-title">Selecionar Exercício</h3>
         <button class="modal-close btn-icon">✕</button>
       </div>
-      <div class="modal-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <input type="text" id="input-picker-search" class="form-input" style="flex:1;" placeholder="Buscar por nome ou músculo...">
-          <button type="button" id="btn-picker-create-exercise" class="btn btn-primary btn-sm" style="white-space:nowrap;">+ Criar Novo</button>
+      <div class="modal-body modal-body-picker">
+        <div class="picker-search-bar">
+          <input type="text" id="input-picker-search" class="form-input form-input-compact" style="flex:1;" placeholder="Buscar por nome ou músculo...">
+          <button type="button" id="btn-picker-create-exercise" class="btn btn-primary btn-compact">+ Criar Novo</button>
         </div>
-        <div id="picker-muscle-chips" class="muscle-group-chips" style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px;">
+        <div id="picker-muscle-chips" class="picker-chips-scroll">
           <button class="chip-btn active" data-group="ALL">Todos</button>
           <button class="chip-btn" data-group="Peito">Peito</button>
           <button class="chip-btn" data-group="Costas">Costas</button>
@@ -737,8 +737,8 @@
           <button class="chip-btn" data-group="Panturrilha">Panturrilha</button>
           <button class="chip-btn" data-group="Abdômen">Abdômen</button>
         </div>
-        <div id="picker-exercise-list" class="cards-list" style="max-height: 340px; overflow-y: auto;">
-          <!-- Lista de exercícios clicáveis -->
+        <div id="picker-exercise-list" class="picker-list-compact">
+          <!-- Lista de exercícios compacta -->
         </div>
       </div>
     </div>
@@ -1087,7 +1087,7 @@ const App = {
 
   init() {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=11')
+      navigator.serviceWorker.register('./sw.js?v=12')
         .then(reg => {
           reg.update();
           console.log('[Creatio SW v10] Registrado e atualizado com sucesso:', reg.scope);
@@ -1632,30 +1632,34 @@ const App = {
     if (group !== 'ALL') exercises = exercises.filter(e => e.muscleGroup === group);
     if (search.trim().length > 0) {
       const q = search.toLowerCase();
-      exercises = exercises.filter(e => e.name.toLowerCase().includes(q) || e.muscleGroup.toLowerCase().includes(q));
+      exercises = exercises.filter(e => e.name.toLowerCase().includes(q) || (e.muscleGroup && e.muscleGroup.toLowerCase().includes(q)));
     }
     const container = document.getElementById('picker-exercise-list');
+    if (!container) return;
     container.innerHTML = '';
     if (exercises.length === 0) {
-      container.innerHTML = '<p class="meta-text" style="text-align:center;padding:16px;">Nenhum exercício encontrado.</p>';
+      container.innerHTML = '<p class="meta-text" style="text-align:center;padding:24px 0;font-size:0.85rem;">Nenhum exercício encontrado.</p>';
       return;
     }
     exercises.forEach(ex => {
       const card = document.createElement('div');
-      card.className = 'exercise-item-card';
-      card.style.cursor = 'pointer';
+      card.className = 'picker-item-card';
+      const eqTag = ex.equipment ? `<span style="opacity:0.75;">• ${ex.equipment}</span>` : '';
       card.innerHTML = `
-        <div>
-          <div class="ex-title-row"><strong>${ex.name}</strong></div>
-          <span class="ex-group-tag">${ex.muscleGroup}</span>
+        <div class="picker-item-info">
+          <div class="picker-item-name">${ex.name}</div>
+          <div class="picker-item-meta">
+            <span>${ex.muscleGroup || 'Geral'}</span>
+            ${eqTag}
+          </div>
         </div>
-        <button type="button" class="btn btn-xs btn-primary">+ Selecionar</button>
+        <span class="picker-select-btn">+ Selecionar</span>
       `;
       card.onclick = () => {
         if (this.exercisePickerCallback) {
           this.exercisePickerCallback(ex);
         }
-        document.getElementById('modal-select-exercise').classList.add('hidden');
+        document.getElementById('modal-select-exercise')?.classList.add('hidden');
       };
       container.appendChild(card);
     });

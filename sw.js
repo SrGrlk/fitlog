@@ -1,9 +1,9 @@
 /* ==========================================================================
-   CREATIO SERVICE WORKER — 100% BULLETPROOF OFFLINE ENGINE (v11)
+   CREATIO SERVICE WORKER — 100% BULLETPROOF OFFLINE ENGINE (v12)
    Resilient app-shell caching, instant offline navigation & dynamic cache.
    ========================================================================== */
 
-const CACHE_NAME = 'creatio-offline-v11';
+const CACHE_NAME = 'creatio-offline-v12';
 const CORE_ASSETS = [
   './',
   './index.html',

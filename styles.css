@@ -1239,6 +1239,163 @@ h4 {
   z-index: 130;
 }
 
+/* COMPACT EXERCISE PICKER MODAL (OPTIMIZED FOR MOBILE) */
+.modal-picker-card {
+  width: 100%;
+  max-width: 500px;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.modal-header-compact {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.modal-header-compact h3 {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 40px);
+}
+
+.modal-body-picker {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.picker-search-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.form-input-compact {
+  min-height: 38px !important;
+  height: 38px;
+  padding: 6px 12px !important;
+  font-size: 0.88rem !important;
+}
+
+.btn-compact {
+  min-height: 38px;
+  height: 38px;
+  padding: 6px 12px !important;
+  font-size: 0.82rem !important;
+  white-space: nowrap;
+}
+
+.picker-chips-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+
+.picker-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.picker-chips-scroll .chip-btn {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.picker-list-compact {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.picker-item-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.picker-item-card:hover,
+.picker-item-card:active {
+  background-color: var(--bg-card-hover);
+  border-color: var(--color-accent);
+}
+
+.picker-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.picker-item-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.picker-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.picker-select-btn {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  background: transparent;
+  pointer-events: none;
+  transition: all 0.15s ease;
+}
+
+.picker-item-card:hover .picker-select-btn,
+.picker-item-card:active .picker-select-btn {
+  background: var(--color-accent);
+  color: #fff;
+}
+
 .modal-header {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border-color);
