@@ -1205,7 +1205,6 @@ h4 {
   stroke: var(--color-accent);
 }
 
-/* MODALS */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1221,16 +1220,23 @@ h4 {
   padding: 16px;
 }
 
-.modal-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+#modal-routine-form,
+#modal-edit-history,
+#modal-workout-summary,
+#modal-install-instructions {
+  z-index: 100;
+}
+
+#modal-exercise-detail {
+  z-index: 110;
+}
+
+#modal-select-exercise {
+  z-index: 120;
+}
+
+#modal-exercise-form {
+  z-index: 130;
 }
 
 .modal-header {

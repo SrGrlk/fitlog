@@ -598,21 +598,41 @@
             <input type="text" id="form-ex-name" class="form-input" required placeholder="Ex: Supino Inclinado com Halteres">
           </div>
           <div class="form-group">
-            <label for="form-ex-group">Grupo Muscular *</label>
+            <label for="form-ex-group">Grupo Muscular Principal *</label>
             <select id="form-ex-group" class="form-select" required>
               <option value="Peito">Peito</option>
               <option value="Costas">Costas</option>
-              <option value="Pernas">Pernas</option>
+              <option value="Pernas">Pernas (Geral)</option>
+              <option value="Quadríceps">Quadríceps</option>
+              <option value="Posterior de Coxa">Posterior de Coxa</option>
+              <option value="Glúteos">Glúteos</option>
               <option value="Ombros">Ombros</option>
               <option value="Bíceps">Bíceps</option>
               <option value="Tríceps">Tríceps</option>
+              <option value="Antebraço">Antebraço</option>
               <option value="Panturrilha">Panturrilha</option>
               <option value="Abdômen">Abdômen</option>
+              <option value="Trapézio">Trapézio</option>
+              <option value="Cardio">Cardio</option>
+              <option value="Outro">Outro</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="form-ex-observation">Observação / Técnica (Opcional)</label>
-            <textarea id="form-ex-observation" class="form-textarea" placeholder="Ex: Manter escápulas retraídas e cotovelos em 45º"></textarea>
+            <label for="form-ex-type">Tipo de Exercício / Equipamento</label>
+            <select id="form-ex-type" class="form-select">
+              <option value="Halteres">Halteres (Halter)</option>
+              <option value="Barra Livre">Barra Livre</option>
+              <option value="Barra Guiada / Smith">Barra Guiada / Smith</option>
+              <option value="Máquina / Aparelho">Máquina / Aparelho</option>
+              <option value="Polia / Cabo">Polia / Cabo</option>
+              <option value="Peso Corporal">Peso Corporal (Calistenia)</option>
+              <option value="Elástico">Elástico / Band</option>
+              <option value="Livre / Outro">Livre / Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="form-ex-observation">Observações / Técnica (Opcional)</label>
+            <textarea id="form-ex-observation" class="form-textarea" placeholder="Ex: Pegada pronada, focar na fase excêntrica"></textarea>
           </div>
           <div class="form-actions">
             <button type="button" class="btn btn-ghost modal-close">Cancelar</button>
@@ -1067,7 +1087,7 @@ const App = {
 
   init() {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=10')
+      navigator.serviceWorker.register('./sw.js?v=11')
         .then(reg => {
           reg.update();
           console.log('[Creatio SW v10] Registrado e atualizado com sucesso:', reg.scope);
@@ -1681,11 +1701,15 @@ const App = {
   currentDetailExId: null,
   onExerciseCreatedCallback: null,
 
-  openNewExerciseModal(prefillName = '', callback = null) {
+  openNewExerciseModal(prefillName = '', callback = null, defaultGroup = '') {
     document.getElementById('form-exercise').reset();
     document.getElementById('form-ex-id').value = '';
     document.getElementById('form-ex-title').textContent = 'Novo Exercício';
     if (prefillName) document.getElementById('form-ex-name').value = prefillName;
+    if (defaultGroup && defaultGroup !== 'ALL') {
+      const grpEl = document.getElementById('form-ex-group');
+      if (grpEl) grpEl.value = defaultGroup;
+    }
     this.onExerciseCreatedCallback = callback;
     document.getElementById('modal-exercise-form').classList.remove('hidden');
   },
@@ -1695,7 +1719,10 @@ const App = {
     if (!ex) return;
     document.getElementById('form-ex-id').value = ex.id;
     document.getElementById('form-ex-name').value = ex.name;
-    document.getElementById('form-ex-group').value = ex.muscleGroup;
+    document.getElementById('form-ex-group').value = ex.muscleGroup || 'Peito';
+    if (document.getElementById('form-ex-type')) {
+      document.getElementById('form-ex-type').value = ex.equipment || '';
+    }
     document.getElementById('form-ex-observation').value = ex.notes || '';
     document.getElementById('form-ex-title').textContent = 'Editar Exercício';
     this.onExerciseCreatedCallback = null;
@@ -1777,9 +1804,10 @@ const App = {
       const id = document.getElementById('form-ex-id').value || null;
       const name = document.getElementById('form-ex-name').value.trim();
       const group = document.getElementById('form-ex-group').value;
+      const equipment = document.getElementById('form-ex-type')?.value || '';
       const notes = document.getElementById('form-ex-observation').value.trim();
       if (!name) return alert('Informe o nome do exercício.');
-      const saved = db.saveExercise({ id, name, muscleGroup: group, notes });
+      const saved = db.saveExercise({ id, name, muscleGroup: group, equipment, notes });
       document.getElementById('modal-exercise-form').classList.add('hidden');
       if (this.onExerciseCreatedCallback) {
         const cb = this.onExerciseCreatedCallback;
@@ -1793,12 +1821,13 @@ const App = {
     // Picker de exercícios
     document.getElementById('btn-picker-create-exercise')?.addEventListener('click', () => {
       const searchVal = document.getElementById('input-picker-search').value.trim();
+      const activeGroup = document.querySelector('#picker-muscle-chips .chip-btn.active')?.getAttribute('data-group') || 'ALL';
       this.openNewExerciseModal(searchVal, (createdEx) => {
         if (this.exercisePickerCallback) {
           this.exercisePickerCallback(createdEx);
         }
         document.getElementById('modal-select-exercise').classList.add('hidden');
-      });
+      }, activeGroup);
     });
 
     document.getElementById('input-picker-search')?.addEventListener('input', (e) => {
