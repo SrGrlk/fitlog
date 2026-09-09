@@ -573,6 +573,11 @@
         <div id="modal-ex-history-list" class="modal-history-scroll">
           <!-- Histórico específico do exercício -->
         </div>
+
+        <div style="display:flex;justify-content:space-between;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-color);">
+          <button type="button" id="btn-edit-current-exercise" class="btn btn-outline btn-sm">Editar Exercício</button>
+          <button type="button" id="btn-delete-current-exercise" class="btn btn-ghost-danger btn-sm">Excluir Exercício</button>
+        </div>
       </div>
     </div>
   </div>
@@ -697,7 +702,10 @@
         <button class="modal-close btn-icon">✕</button>
       </div>
       <div class="modal-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
-        <input type="text" id="input-picker-search" class="form-input" placeholder="Buscar por nome ou músculo...">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="input-picker-search" class="form-input" style="flex:1;" placeholder="Buscar por nome ou músculo...">
+          <button type="button" id="btn-picker-create-exercise" class="btn btn-primary btn-sm" style="white-space:nowrap;">+ Criar Novo</button>
+        </div>
         <div id="picker-muscle-chips" class="muscle-group-chips" style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px;">
           <button class="chip-btn active" data-group="ALL">Todos</button>
           <button class="chip-btn" data-group="Peito">Peito</button>
@@ -1670,8 +1678,45 @@ const App = {
     });
   },
 
+  currentDetailExId: null,
+  onExerciseCreatedCallback: null,
+
+  openNewExerciseModal(prefillName = '', callback = null) {
+    document.getElementById('form-exercise').reset();
+    document.getElementById('form-ex-id').value = '';
+    document.getElementById('form-ex-title').textContent = 'Novo Exercício';
+    if (prefillName) document.getElementById('form-ex-name').value = prefillName;
+    this.onExerciseCreatedCallback = callback;
+    document.getElementById('modal-exercise-form').classList.remove('hidden');
+  },
+
+  openEditExerciseModal(exId) {
+    const ex = db.getExerciseById(exId);
+    if (!ex) return;
+    document.getElementById('form-ex-id').value = ex.id;
+    document.getElementById('form-ex-name').value = ex.name;
+    document.getElementById('form-ex-group').value = ex.muscleGroup;
+    document.getElementById('form-ex-observation').value = ex.notes || '';
+    document.getElementById('form-ex-title').textContent = 'Editar Exercício';
+    this.onExerciseCreatedCallback = null;
+    document.getElementById('modal-exercise-detail').classList.add('hidden');
+    document.getElementById('modal-exercise-form').classList.remove('hidden');
+  },
+
+  deleteExercise(exId) {
+    const ex = db.getExerciseById(exId);
+    if (!ex) return;
+    if (confirm(`Tem certeza que deseja excluir o exercício "${ex.name}"?`)) {
+      db.deleteExercise(exId);
+      document.getElementById('modal-exercise-detail').classList.add('hidden');
+      this.renderExerciseCatalog();
+      alert('Exercício excluído com sucesso!');
+    }
+  },
+
   openExerciseDetailModal(exId) {
     const ex = db.getExerciseById(exId); if (!ex) return;
+    this.currentDetailExId = exId;
     const records = db.getExerciseRecords(exId), settings = db.getSettings();
     document.getElementById('modal-ex-title').textContent = ex.name;
     document.getElementById('modal-ex-notes').textContent = ex.notes ? `Técnica: "${ex.notes}"` : '';
@@ -1720,13 +1765,42 @@ const App = {
       }, 'Adicionar Exercício ao Treino Atual');
     });
 
-    // Catálogo de exercícios
+    // Catálogo de exercícios e formulário
     document.getElementById('input-exercise-search')?.addEventListener('input', (e) => this.renderExerciseCatalog('ALL', e.target.value));
     document.querySelectorAll('#muscle-group-chips .chip-btn').forEach(chip => chip.addEventListener('click', () => { document.querySelectorAll('#muscle-group-chips .chip-btn').forEach(c => c.classList.remove('active')); chip.classList.add('active'); this.renderExerciseCatalog(chip.getAttribute('data-group'), document.getElementById('input-exercise-search').value); }));
-    document.getElementById('btn-modal-new-exercise')?.addEventListener('click', () => { document.getElementById('form-exercise').reset(); document.getElementById('form-ex-id').value = ''; document.getElementById('modal-exercise-form').classList.remove('hidden'); });
-    document.getElementById('form-exercise')?.addEventListener('submit', (e) => { e.preventDefault(); db.saveExercise({ id: document.getElementById('form-ex-id').value || null, name: document.getElementById('form-ex-name').value.trim(), muscleGroup: document.getElementById('form-ex-group').value, notes: document.getElementById('form-ex-observation').value.trim() }); document.getElementById('modal-exercise-form').classList.add('hidden'); this.renderExerciseCatalog(); });
+    document.getElementById('btn-modal-new-exercise')?.addEventListener('click', () => this.openNewExerciseModal());
+    document.getElementById('btn-edit-current-exercise')?.addEventListener('click', () => { if (this.currentDetailExId) this.openEditExerciseModal(this.currentDetailExId); });
+    document.getElementById('btn-delete-current-exercise')?.addEventListener('click', () => { if (this.currentDetailExId) this.deleteExercise(this.currentDetailExId); });
+
+    document.getElementById('form-exercise')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('form-ex-id').value || null;
+      const name = document.getElementById('form-ex-name').value.trim();
+      const group = document.getElementById('form-ex-group').value;
+      const notes = document.getElementById('form-ex-observation').value.trim();
+      if (!name) return alert('Informe o nome do exercício.');
+      const saved = db.saveExercise({ id, name, muscleGroup: group, notes });
+      document.getElementById('modal-exercise-form').classList.add('hidden');
+      if (this.onExerciseCreatedCallback) {
+        const cb = this.onExerciseCreatedCallback;
+        this.onExerciseCreatedCallback = null;
+        cb(saved);
+      }
+      this.renderExerciseCatalog();
+      alert(`Exercício "${saved.name}" salvo com sucesso!`);
+    });
 
     // Picker de exercícios
+    document.getElementById('btn-picker-create-exercise')?.addEventListener('click', () => {
+      const searchVal = document.getElementById('input-picker-search').value.trim();
+      this.openNewExerciseModal(searchVal, (createdEx) => {
+        if (this.exercisePickerCallback) {
+          this.exercisePickerCallback(createdEx);
+        }
+        document.getElementById('modal-select-exercise').classList.add('hidden');
+      });
+    });
+
     document.getElementById('input-picker-search')?.addEventListener('input', (e) => {
       const activeGroup = document.querySelector('#picker-muscle-chips .chip-btn.active')?.getAttribute('data-group') || 'ALL';
       this.renderExercisePickerList(activeGroup, e.target.value);
