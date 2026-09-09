@@ -4,8 +4,6 @@
    Targeted Red Accents (#E00000). Zero Gimmicks, Pure Functionality.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap');
-
 :root {
   /* DARK THEME TOKENS (DEFAULT UNDERGROUND PALETTE) */
   --bg-primary: #000000;

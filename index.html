@@ -10,18 +10,20 @@
   <meta name="theme-color" content="#000000">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json?v=3">
+  <link rel="manifest" href="manifest.json">
   <!-- Google Fonts: Permanent Marker (Títulos Sketch/Grunge) & Inter (Números, Cargas, Textos) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <!-- pdf.js from CDN fallback or local script for offline PDF text extraction -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <!-- pdf.js (deferred so offline boots never block or freeze splash screen) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>
-    if (typeof pdfjsLib !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-    }
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+      }
+    });
   </script>
 </head>
 <body>
@@ -687,6 +689,87 @@
   </div>
 
 
+  <!-- MODAL: SELECIONAR EXERCÍCIO (REUTILIZÁVEL) -->
+  <div id="modal-select-exercise" class="modal-overlay hidden">
+    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 id="modal-select-exercise-title">Selecionar Exercício</h3>
+        <button class="modal-close btn-icon">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+        <input type="text" id="input-picker-search" class="form-input" placeholder="Buscar por nome ou músculo...">
+        <div id="picker-muscle-chips" class="muscle-group-chips" style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px;">
+          <button class="chip-btn active" data-group="ALL">Todos</button>
+          <button class="chip-btn" data-group="Peito">Peito</button>
+          <button class="chip-btn" data-group="Costas">Costas</button>
+          <button class="chip-btn" data-group="Pernas">Pernas</button>
+          <button class="chip-btn" data-group="Ombros">Ombros</button>
+          <button class="chip-btn" data-group="Bíceps">Bíceps</button>
+          <button class="chip-btn" data-group="Tríceps">Tríceps</button>
+          <button class="chip-btn" data-group="Panturrilha">Panturrilha</button>
+          <button class="chip-btn" data-group="Abdômen">Abdômen</button>
+        </div>
+        <div id="picker-exercise-list" class="cards-list" style="max-height: 340px; overflow-y: auto;">
+          <!-- Lista de exercícios clicáveis -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: EDITAR TREINO CONCLUÍDO (HISTÓRICO) -->
+  <div id="modal-edit-history" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 650px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Editar Treino Registrado
+        </h3>
+        <button class="modal-close btn-icon">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;">
+        <form id="form-edit-history">
+          <input type="hidden" id="edit-history-session-id">
+          <div class="form-group">
+            <label for="edit-history-routine-name">Nome do Treino *</label>
+            <input type="text" id="edit-history-routine-name" class="form-input" required placeholder="Ex: TREINO A — PEITO / TRÍCEPS">
+          </div>
+          <div class="form-group">
+            <label for="edit-history-datetime">Data e Horário do Treino</label>
+            <input type="datetime-local" id="edit-history-datetime" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label style="margin: 0; font-weight: 700;">Exercícios e Séries</label>
+              <button type="button" id="btn-add-ex-to-history-edit" class="btn btn-xs btn-outline">+ Adicionar Exercício</button>
+            </div>
+            <div id="edit-history-exercises-list" class="active-exercises-list" style="gap: 12px;">
+              <!-- Conteúdo dinâmico com tabela de séries editáveis -->
+            </div>
+          </div>
+
+          <div class="summary-stats-grid" style="margin: 12px 0;">
+            <div class="summary-box">
+              <span class="label">SÉRIES TOTAIS</span>
+              <strong id="edit-history-total-sets" class="value mono">0</strong>
+            </div>
+            <div class="summary-box">
+              <span class="label">VOLUME CARGA</span>
+              <strong id="edit-history-total-volume" class="value mono">0 kg</strong>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 16px;">
+            <button type="button" class="btn btn-ghost modal-close">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
   <!-- SINGLE SELF-CONTAINED OFFLINE APPLICATION SCRIPT -->
   <script>
 /* ==========================================================================
@@ -787,6 +870,26 @@ class LocalDatabase {
     localStorage.setItem(DB_KEYS.HISTORY, JSON.stringify(history));
     this.clearActiveSession();
     return session;
+  }
+  updateHistoryWorkout(session) {
+    const history = this.getHistory();
+    const idx = history.findIndex(s => s.id === session.id);
+    if (idx >= 0) {
+      let vol = 0, sets = 0;
+      session.exerciseEntries.forEach(entry => entry.sets.forEach(s => {
+        if (s.completed || s.reps > 0) {
+          vol += (parseFloat(s.weight) || 0) * (parseFloat(s.reps) || 0);
+          sets++;
+        }
+      }));
+      session.totalVolume = vol;
+      session.totalSets = sets;
+      session.status = 'completed';
+      history[idx] = session;
+      localStorage.setItem(DB_KEYS.HISTORY, JSON.stringify(history));
+      return session;
+    }
+    return null;
   }
   deleteHistoryEntry(id) { localStorage.setItem(DB_KEYS.HISTORY, JSON.stringify(this.getHistory().filter(s => s.id !== id))); }
   getLastPerformanceForExercise(exId) {
@@ -946,16 +1049,31 @@ const aiAssistant = new AIWorkoutAssistant();
    FITLOG - APP CONTROLLER
    ========================================================================== */
 const App = {
-  currentView: 'view-home', activeSession: null, activeTimerInterval: null, deferredInstallPrompt: null,
+  currentView: 'view-home',
+  activeSession: null,
+  activeTimerInterval: null,
+  deferredInstallPrompt: null,
+  editingRoutineExerciseIds: [],
+  editingHistorySession: null,
+  exercisePickerCallback: null,
+
   init() {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=8')
-        .then(reg => { reg.update(); console.log('[Creatio SW] Atualizado'); })
-        .catch(err => console.error('[Creatio SW] Erro:', err));
+      navigator.serviceWorker.register('./sw.js?v=10')
+        .then(reg => {
+          reg.update();
+          console.log('[Creatio SW v10] Registrado e atualizado com sucesso:', reg.scope);
+        })
+        .catch(err => console.error('[Creatio SW] Erro ao registrar:', err));
     }
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.deferredInstallPrompt = e; });
-    this.bindNavigation(); this.bindEvents(); this.applySettings(); this.checkActiveSession(); this.renderCurrentView();
+    this.bindNavigation();
+    this.bindEvents();
+    this.applySettings();
+    this.checkActiveSession();
+    this.renderCurrentView();
   },
+
   bindNavigation() {
     document.querySelectorAll('.bottom-nav .nav-item, .nav-to').forEach(btn => {
       btn.addEventListener('click', () => { const target = btn.getAttribute('data-target'); if (target) this.switchView(target); });
@@ -964,6 +1082,7 @@ const App = {
       const s = db.getSettings(); s.theme = s.theme === 'dark' ? 'light' : 'dark'; db.saveSettings(s); this.applySettings();
     });
   },
+
   applySettings() {
     const s = db.getSettings(); document.documentElement.setAttribute('data-theme', s.theme || 'dark');
     const icon = document.querySelector('.icon-theme');
@@ -976,6 +1095,7 @@ const App = {
     const t = document.getElementById('select-theme'); if (t) t.value = s.theme || 'dark';
     const r = document.getElementById('select-default-rest'); if (r) r.value = s.restTimerDefault || 90;
   },
+
   switchView(id) {
     document.querySelectorAll('.view-screen').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
@@ -983,6 +1103,7 @@ const App = {
     const nav = document.querySelector(`.bottom-nav .nav-item[data-target="${id}"]`); if (nav) nav.classList.add('active');
     this.currentView = id; this.renderCurrentView();
   },
+
   renderCurrentView() {
     switch (this.currentView) {
       case 'view-home': this.renderHome(); break;
@@ -993,11 +1114,13 @@ const App = {
       case 'view-routines': this.renderRoutinesManagement(); break;
     }
   },
+
   checkActiveSession() {
     const s = db.getActiveSession();
     if (s && s.status === 'in_progress') { this.activeSession = s; document.getElementById('banner-active-workout')?.classList.remove('hidden'); this.startWorkoutTimer(); }
     else document.getElementById('banner-active-workout')?.classList.add('hidden');
   },
+
   startWorkoutTimer() {
     if (this.activeTimerInterval) clearInterval(this.activeTimerInterval);
     this.activeTimerInterval = setInterval(() => {
@@ -1009,6 +1132,7 @@ const App = {
       const a = document.getElementById('active-timer-display'); if (a) a.textContent = formatted;
     }, 1000);
   },
+
   startNewWorkout(routineId) {
     const routine = db.getRoutineById(routineId); if (!routine) return;
     const exercises = db.getExercises();
@@ -1027,6 +1151,7 @@ const App = {
     document.getElementById('banner-active-workout')?.classList.remove('hidden');
     this.startWorkoutTimer(); this.switchView('view-active-workout');
   },
+
   renderHome() {
     const routines = db.getRoutines(), history = db.getHistory(), settings = db.getSettings();
     const titleEl = document.getElementById('next-workout-title'), startBtn = document.getElementById('btn-start-quick-workout');
@@ -1052,6 +1177,7 @@ const App = {
       list.appendChild(card);
     });
   },
+
   renderActiveWorkout() {
     if (!this.activeSession) {
       document.getElementById('active-exercises-container').innerHTML = `<div class="section-card text-center" style="padding: 32px 16px;"><h3>Nenhum treino em andamento</h3><button class="btn btn-primary nav-to" data-target="view-home">Ir para o Início</button></div>`;
@@ -1081,9 +1207,14 @@ const App = {
             <h3 class="ex-card-title">${entry.exerciseName}</h3>
             <span class="ex-muscle-badge">${entry.muscleGroup}</span>
           </div>
-          <button class="btn-icon" onclick="App.openExerciseDetailModal('${entry.exerciseId}')" title="Histórico do Exercício">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-          </button>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="btn-icon" onclick="App.openExerciseDetailModal('${entry.exerciseId}')" title="Histórico do Exercício">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            </button>
+            <button class="btn-icon" onclick="App.removeExerciseFromActive(${exIdx})" title="Remover Exercício deste Treino" style="color:var(--text-muted);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
         </div>
         <div class="ex-last-perf-box"><span>${lastPerfHtml}</span></div>
         <table class="sets-table">
@@ -1105,6 +1236,17 @@ const App = {
     });
     document.getElementById('active-total-sets').textContent = completedSetsTotal;
   },
+
+  removeExerciseFromActive(exIdx) {
+    if (!this.activeSession) return;
+    const exName = this.activeSession.exerciseEntries[exIdx]?.exerciseName || 'este exercício';
+    if (confirm(`Deseja remover "${exName}" do treino em andamento?`)) {
+      this.activeSession.exerciseEntries.splice(exIdx, 1);
+      db.saveActiveSession(this.activeSession);
+      this.renderActiveWorkout();
+    }
+  },
+
   updateSetVal(exIdx, setIdx, field, val) { if (!this.activeSession) return; this.activeSession.exerciseEntries[exIdx].sets[setIdx][field] = parseFloat(val) || 0; db.saveActiveSession(this.activeSession); },
   adjustSetVal(exIdx, setIdx, field, delta) { if (!this.activeSession) return; const cur = this.activeSession.exerciseEntries[exIdx].sets[setIdx][field] || 0; this.activeSession.exerciseEntries[exIdx].sets[setIdx][field] = Math.max(0, cur + delta); db.saveActiveSession(this.activeSession); this.renderActiveWorkout(); },
   toggleSetCheck(exIdx, setIdx) {
@@ -1179,6 +1321,10 @@ const App = {
       container.appendChild(div);
     });
   },
+
+  // ------------------------------------------------------------------------
+  // HISTÓRICO DE TREINOS & EDIÇÃO DE TREINO CONCLUÍDO (MESMO PRONTO)
+  // ------------------------------------------------------------------------
   renderHistory() {
     const h = db.getHistory(), settings = db.getSettings(), list = document.getElementById('history-items-list'); list.innerHTML = '';
     if (h.length === 0) { list.innerHTML = `<div class="section-card text-center" style="padding: 32px 16px;"><h3>Nenhum treino registrado</h3></div>`; return; }
@@ -1191,9 +1337,14 @@ const App = {
             <span class="history-date">${d.toLocaleDateString('pt-BR')} • ${d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span>
             <h3 class="history-routine-title">${session.routineName}</h3>
           </div>
-          <button class="btn-icon" onclick="App.deleteHistory('${session.id}')" title="Excluir treino">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          </button>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="btn-icon" onclick="App.openEditHistoryModal('${session.id}')" title="Editar Treino Concluído" style="color:var(--text-main);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="btn-icon" onclick="App.deleteHistory('${session.id}')" title="Excluir treino" style="color:var(--color-accent);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
         </div>
         <div class="history-summary-line">
           <span>${session.exerciseEntries.length} exercícios</span> • <span>${session.totalSets} séries</span> • <strong class="mono">${session.totalVolume.toLocaleString('pt-BR')} ${settings.weightUnit}</strong>
@@ -1203,7 +1354,285 @@ const App = {
     });
     this.renderCalendarGrid();
   },
-  deleteHistory(id) { if (confirm('Excluir este registro de treino?')) { db.deleteHistoryEntry(id); this.renderHistory(); } },
+
+  deleteHistory(id) { if (confirm('Excluir este registro de treino?')) { db.deleteHistoryEntry(id); this.renderHistory(); this.renderDashboard(); this.renderHome(); } },
+
+  openEditHistoryModal(sessionId) {
+    const session = db.getHistory().find(s => s.id === sessionId);
+    if (!session) return;
+    this.editingHistorySession = JSON.parse(JSON.stringify(session));
+    document.getElementById('edit-history-session-id').value = this.editingHistorySession.id;
+    document.getElementById('edit-history-routine-name').value = this.editingHistorySession.routineName;
+
+    const d = new Date(this.editingHistorySession.endTime || this.editingHistorySession.startTime);
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    const localIso = new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+    document.getElementById('edit-history-datetime').value = localIso;
+
+    this.renderEditHistoryExercises();
+    document.getElementById('modal-edit-history').classList.remove('hidden');
+  },
+
+  renderEditHistoryExercises() {
+    if (!this.editingHistorySession) return;
+    const settings = db.getSettings();
+    const container = document.getElementById('edit-history-exercises-list');
+    container.innerHTML = '';
+
+    let totalVol = 0;
+    let totalSets = 0;
+
+    if (this.editingHistorySession.exerciseEntries.length === 0) {
+      container.innerHTML = '<p class="meta-text" style="text-align:center;padding:16px;">Nenhum exercício neste treino. Clique em "+ Adicionar Exercício" acima.</p>';
+    }
+
+    this.editingHistorySession.exerciseEntries.forEach((entry, exIdx) => {
+      const card = document.createElement('div');
+      card.className = 'exercise-workout-card';
+      card.style.marginBottom = '12px';
+
+      let setsRows = '';
+      entry.sets.forEach((set, setIdx) => {
+        const w = parseFloat(set.weight) || 0;
+        const r = parseFloat(set.reps) || 0;
+        if (r > 0) {
+          totalVol += w * r;
+          totalSets++;
+        }
+        setsRows += `
+          <tr class="set-row">
+            <td class="set-num-badge">${setIdx + 1}</td>
+            <td>
+              <div class="input-num-wrapper">
+                <button type="button" class="btn-step" onclick="App.adjustEditHistorySetVal(${exIdx}, ${setIdx}, 'weight', -1)">-</button>
+                <input type="number" step="0.5" class="input-set-field" value="${set.weight ?? ''}" placeholder="0" onchange="App.updateEditHistorySetVal(${exIdx}, ${setIdx}, 'weight', this.value)">
+                <button type="button" class="btn-step" onclick="App.adjustEditHistorySetVal(${exIdx}, ${setIdx}, 'weight', 1)">+</button>
+              </div>
+            </td>
+            <td>
+              <div class="input-num-wrapper">
+                <button type="button" class="btn-step" onclick="App.adjustEditHistorySetVal(${exIdx}, ${setIdx}, 'reps', -1)">-</button>
+                <input type="number" class="input-set-field" value="${set.reps ?? ''}" placeholder="0" onchange="App.updateEditHistorySetVal(${exIdx}, ${setIdx}, 'reps', this.value)">
+                <button type="button" class="btn-step" onclick="App.adjustEditHistorySetVal(${exIdx}, ${setIdx}, 'reps', 1)">+</button>
+              </div>
+            </td>
+            <td style="text-align:center;">
+              <button type="button" class="btn-step" style="color:var(--color-accent);width:32px;height:36px;" onclick="App.removeSetFromEditHistory(${exIdx}, ${setIdx})" title="Excluir série">✕</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="ex-card-header" style="margin-bottom:8px;">
+          <div>
+            <h3 class="ex-card-title">${entry.exerciseName}</h3>
+            <span class="ex-muscle-badge">${entry.muscleGroup || 'Geral'}</span>
+          </div>
+          <button type="button" class="btn btn-xs btn-ghost-danger" onclick="App.removeExerciseFromEditHistory(${exIdx})">Remover Exercício</button>
+        </div>
+        <table class="sets-table">
+          <thead>
+            <tr>
+              <th>SÉRIE</th>
+              <th>CARGA (${settings.weightUnit})</th>
+              <th>REPS</th>
+              <th>AÇÃO</th>
+            </tr>
+          </thead>
+          <tbody>${setsRows}</tbody>
+        </table>
+        <div style="margin-top:8px;">
+          <button type="button" class="btn btn-xs btn-outline" onclick="App.addSetToEditHistory(${exIdx})">+ ADICIONAR SÉRIE</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    document.getElementById('edit-history-total-sets').textContent = totalSets;
+    document.getElementById('edit-history-total-volume').textContent = `${totalVol.toLocaleString('pt-BR')} ${settings.weightUnit}`;
+  },
+
+  updateEditHistorySetVal(exIdx, setIdx, field, val) {
+    if (!this.editingHistorySession) return;
+    this.editingHistorySession.exerciseEntries[exIdx].sets[setIdx][field] = parseFloat(val) || 0;
+    this.renderEditHistoryExercises();
+  },
+
+  adjustEditHistorySetVal(exIdx, setIdx, field, delta) {
+    if (!this.editingHistorySession) return;
+    const cur = parseFloat(this.editingHistorySession.exerciseEntries[exIdx].sets[setIdx][field]) || 0;
+    this.editingHistorySession.exerciseEntries[exIdx].sets[setIdx][field] = Math.max(0, cur + delta);
+    this.renderEditHistoryExercises();
+  },
+
+  addSetToEditHistory(exIdx) {
+    if (!this.editingHistorySession) return;
+    const sets = this.editingHistorySession.exerciseEntries[exIdx].sets;
+    const last = sets[sets.length - 1];
+    sets.push({
+      setId: 'set-' + Date.now() + '-' + Math.random().toString(36).substring(2,5),
+      setNumber: sets.length + 1,
+      weight: last ? last.weight : 0,
+      reps: last ? last.reps : 0,
+      completed: true
+    });
+    this.renderEditHistoryExercises();
+  },
+
+  removeSetFromEditHistory(exIdx, setIdx) {
+    if (!this.editingHistorySession) return;
+    const sets = this.editingHistorySession.exerciseEntries[exIdx].sets;
+    sets.splice(setIdx, 1);
+    sets.forEach((s, i) => s.setNumber = i + 1);
+    this.renderEditHistoryExercises();
+  },
+
+  removeExerciseFromEditHistory(exIdx) {
+    if (!this.editingHistorySession) return;
+    const name = this.editingHistorySession.exerciseEntries[exIdx].exerciseName;
+    if (confirm(`Remover "${name}" deste treino?`)) {
+      this.editingHistorySession.exerciseEntries.splice(exIdx, 1);
+      this.renderEditHistoryExercises();
+    }
+  },
+
+  // ------------------------------------------------------------------------
+  // GERENCIADOR DE ROTINAS & EDIÇÃO DE FICHAS DE TREINO (ROTINAS PRONTAS)
+  // ------------------------------------------------------------------------
+  renderRoutinesManagement() {
+    const routines = db.getRoutines(), container = document.getElementById('routines-management-list'); container.innerHTML = '';
+    routines.forEach(routine => {
+      const card = document.createElement('div'); card.className = 'section-card'; card.style.display = 'flex'; card.style.justifyContent = 'space-between'; card.style.alignItems = 'center';
+      card.innerHTML = `
+        <div style="flex: 1; min-width: 0; padding-right: 8px;">
+          <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${routine.name}</h3>
+          <p class="meta-text">${routine.muscleFocus ? routine.muscleFocus + ' • ' : ''}${routine.exerciseIds.length} exercícios</p>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="btn btn-sm btn-outline" onclick="App.openEditRoutineModal('${routine.id}')">Editar</button>
+          <button class="btn btn-sm btn-outline" onclick="App.duplicateRoutine('${routine.id}')">Duplicar</button>
+          <button class="btn btn-sm btn-ghost-danger" onclick="App.deleteRoutine('${routine.id}')" title="Excluir">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>`;
+      container.appendChild(card);
+    });
+  },
+
+  openNewRoutineModal() {
+    document.getElementById('form-routine').reset();
+    document.getElementById('form-routine-id').value = '';
+    document.getElementById('form-routine-title-header').textContent = 'Nova Rotina de Treino';
+    this.editingRoutineExerciseIds = [];
+    this.renderRoutineSelectedExercises();
+    document.getElementById('modal-routine-form').classList.remove('hidden');
+  },
+
+  openEditRoutineModal(routineId) {
+    const routine = db.getRoutineById(routineId);
+    if (!routine) return;
+    document.getElementById('form-routine-id').value = routine.id;
+    document.getElementById('form-routine-name').value = routine.name;
+    document.getElementById('form-routine-focus').value = routine.muscleFocus || '';
+    document.getElementById('form-routine-title-header').textContent = 'Editar Rotina de Treino';
+    this.editingRoutineExerciseIds = [...routine.exerciseIds];
+    this.renderRoutineSelectedExercises();
+    document.getElementById('modal-routine-form').classList.remove('hidden');
+  },
+
+  renderRoutineSelectedExercises() {
+    const list = document.getElementById('routine-exercises-selected-list');
+    list.innerHTML = '';
+    const allEx = db.getExercises();
+    if (this.editingRoutineExerciseIds.length === 0) {
+      list.innerHTML = '<p class="meta-text" style="padding: 8px 0;">Nenhum exercício adicionado a esta rotina ainda.</p>';
+      return;
+    }
+    this.editingRoutineExerciseIds.forEach((exId, idx) => {
+      const ex = allEx.find(e => e.id === exId) || { name: 'Exercício Desconhecido', muscleGroup: 'Geral' };
+      const item = document.createElement('div');
+      item.className = 'selected-ex-item';
+      item.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+          <span class="mono" style="color:var(--text-muted);font-weight:700;">${idx+1}.</span>
+          <strong style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.9rem;">${ex.name}</strong>
+          <span class="ex-muscle-badge" style="font-size:0.65rem;">${ex.muscleGroup}</span>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0;">
+          <button type="button" class="btn-step" style="width:28px;height:28px;font-size:0.8rem;" onclick="App.moveRoutineExercise(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''} title="Subir">↑</button>
+          <button type="button" class="btn-step" style="width:28px;height:28px;font-size:0.8rem;" onclick="App.moveRoutineExercise(${idx}, 1)" ${idx === this.editingRoutineExerciseIds.length - 1 ? 'disabled style="opacity:0.3;"' : ''} title="Descer">↓</button>
+          <button type="button" class="btn-step" style="width:28px;height:28px;font-size:0.8rem;color:var(--color-accent);" onclick="App.removeRoutineExercise(${idx})" title="Remover">✕</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  },
+
+  moveRoutineExercise(index, direction) {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= this.editingRoutineExerciseIds.length) return;
+    const temp = this.editingRoutineExerciseIds[index];
+    this.editingRoutineExerciseIds[index] = this.editingRoutineExerciseIds[targetIdx];
+    this.editingRoutineExerciseIds[targetIdx] = temp;
+    this.renderRoutineSelectedExercises();
+  },
+
+  removeRoutineExercise(index) {
+    this.editingRoutineExerciseIds.splice(index, 1);
+    this.renderRoutineSelectedExercises();
+  },
+
+  duplicateRoutine(id) { db.duplicateRoutine(id); this.renderRoutinesManagement(); this.renderHome(); },
+  deleteRoutine(id) { if (confirm('Excluir esta rotina?')) { db.deleteRoutine(id); this.renderRoutinesManagement(); this.renderHome(); } },
+
+  // ------------------------------------------------------------------------
+  // MODAL SELETOR DE EXERCÍCIOS REUTILIZÁVEL
+  // ------------------------------------------------------------------------
+  openSelectExerciseModal(callback, title = 'Selecionar Exercício') {
+    this.exercisePickerCallback = callback;
+    document.getElementById('modal-select-exercise-title').textContent = title;
+    document.getElementById('input-picker-search').value = '';
+    document.querySelectorAll('#picker-muscle-chips .chip-btn').forEach(c => c.classList.remove('active'));
+    document.querySelector('#picker-muscle-chips .chip-btn[data-group="ALL"]')?.classList.add('active');
+    this.renderExercisePickerList('ALL', '');
+    document.getElementById('modal-select-exercise').classList.remove('hidden');
+  },
+
+  renderExercisePickerList(group = 'ALL', search = '') {
+    let exercises = db.getExercises();
+    if (group !== 'ALL') exercises = exercises.filter(e => e.muscleGroup === group);
+    if (search.trim().length > 0) {
+      const q = search.toLowerCase();
+      exercises = exercises.filter(e => e.name.toLowerCase().includes(q) || e.muscleGroup.toLowerCase().includes(q));
+    }
+    const container = document.getElementById('picker-exercise-list');
+    container.innerHTML = '';
+    if (exercises.length === 0) {
+      container.innerHTML = '<p class="meta-text" style="text-align:center;padding:16px;">Nenhum exercício encontrado.</p>';
+      return;
+    }
+    exercises.forEach(ex => {
+      const card = document.createElement('div');
+      card.className = 'exercise-item-card';
+      card.style.cursor = 'pointer';
+      card.innerHTML = `
+        <div>
+          <div class="ex-title-row"><strong>${ex.name}</strong></div>
+          <span class="ex-group-tag">${ex.muscleGroup}</span>
+        </div>
+        <button type="button" class="btn btn-xs btn-primary">+ Selecionar</button>
+      `;
+      card.onclick = () => {
+        if (this.exercisePickerCallback) {
+          this.exercisePickerCallback(ex);
+        }
+        document.getElementById('modal-select-exercise').classList.add('hidden');
+      };
+      container.appendChild(card);
+    });
+  },
+
   renderCalendarGrid() {
     const grid = document.getElementById('calendar-days-grid'); grid.innerHTML = '';
     const now = new Date(), daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(), firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
@@ -1222,6 +1651,7 @@ const App = {
       grid.appendChild(cell);
     }
   },
+
   renderExerciseCatalog(filter = 'ALL', search = '') {
     let exercises = db.getExercises();
     if (filter !== 'ALL') exercises = exercises.filter(e => e.muscleGroup === filter);
@@ -1239,6 +1669,7 @@ const App = {
       container.appendChild(card);
     });
   },
+
   openExerciseDetailModal(exId) {
     const ex = db.getExerciseById(exId); if (!ex) return;
     const records = db.getExerciseRecords(exId), settings = db.getSettings();
@@ -1256,38 +1687,134 @@ const App = {
     });
     document.getElementById('modal-exercise-detail').classList.remove('hidden');
   },
-  renderRoutinesManagement() {
-    const routines = db.getRoutines(), container = document.getElementById('routines-management-list'); container.innerHTML = '';
-    routines.forEach(routine => {
-      const card = document.createElement('div'); card.className = 'section-card'; card.style.display = 'flex'; card.style.justifyContent = 'space-between'; card.style.alignItems = 'center';
-      card.innerHTML = `
-        <div>
-          <h3>${routine.name}</h3>
-          <p class="meta-text">${routine.exerciseIds.length} exercícios</p>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-sm btn-outline" onclick="App.duplicateRoutine('${routine.id}')">Duplicar</button>
-          <button class="btn btn-sm btn-ghost-danger" onclick="App.deleteRoutine('${routine.id}')" title="Excluir">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          </button>
-        </div>`;
-      container.appendChild(card);
-    });
-  },
-  duplicateRoutine(id) { db.duplicateRoutine(id); this.renderRoutinesManagement(); },
-  deleteRoutine(id) { if (confirm('Excluir esta rotina?')) { db.deleteRoutine(id); this.renderRoutinesManagement(); } },
+
   bindEvents() {
+    // Banner sessão ativa
     document.getElementById('btn-resume-active')?.addEventListener('click', () => this.switchView('view-active-workout'));
     document.getElementById('btn-cancel-active')?.addEventListener('click', () => { if (confirm('Descartar treino em andamento?')) { db.clearActiveSession(); this.activeSession = null; document.getElementById('banner-active-workout')?.classList.add('hidden'); this.switchView('view-home'); } });
     document.getElementById('btn-finish-workout')?.addEventListener('click', () => this.finishWorkout());
     document.getElementById('btn-close-summary')?.addEventListener('click', () => { document.getElementById('modal-workout-summary').classList.add('hidden'); this.switchView('view-history'); });
     document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', () => btn.closest('.modal-overlay').classList.add('hidden')));
+
+    // Adicionar exercício extra ao treino ativo
+    document.getElementById('btn-add-extra-exercise')?.addEventListener('click', () => {
+      if (!this.activeSession) return;
+      this.openSelectExerciseModal(ex => {
+        const last = db.getLastPerformanceForExercise(ex.id);
+        const newEntry = {
+          exerciseId: ex.id,
+          exerciseName: ex.name,
+          muscleGroup: ex.muscleGroup,
+          sets: [1, 2, 3].map(num => ({
+            setId: 'set-' + Date.now() + '-' + Math.random().toString(36).substring(2,5),
+            setNumber: num,
+            weight: last && last.sets[num-1] ? last.sets[num-1].weight : 0,
+            reps: last && last.sets[num-1] ? last.sets[num-1].reps : 0,
+            completed: false
+          })),
+          lastPerf: last
+        };
+        this.activeSession.exerciseEntries.push(newEntry);
+        db.saveActiveSession(this.activeSession);
+        this.renderActiveWorkout();
+      }, 'Adicionar Exercício ao Treino Atual');
+    });
+
+    // Catálogo de exercícios
     document.getElementById('input-exercise-search')?.addEventListener('input', (e) => this.renderExerciseCatalog('ALL', e.target.value));
     document.querySelectorAll('#muscle-group-chips .chip-btn').forEach(chip => chip.addEventListener('click', () => { document.querySelectorAll('#muscle-group-chips .chip-btn').forEach(c => c.classList.remove('active')); chip.classList.add('active'); this.renderExerciseCatalog(chip.getAttribute('data-group'), document.getElementById('input-exercise-search').value); }));
     document.getElementById('btn-modal-new-exercise')?.addEventListener('click', () => { document.getElementById('form-exercise').reset(); document.getElementById('form-ex-id').value = ''; document.getElementById('modal-exercise-form').classList.remove('hidden'); });
     document.getElementById('form-exercise')?.addEventListener('submit', (e) => { e.preventDefault(); db.saveExercise({ id: document.getElementById('form-ex-id').value || null, name: document.getElementById('form-ex-name').value.trim(), muscleGroup: document.getElementById('form-ex-group').value, notes: document.getElementById('form-ex-observation').value.trim() }); document.getElementById('modal-exercise-form').classList.add('hidden'); this.renderExerciseCatalog(); });
+
+    // Picker de exercícios
+    document.getElementById('input-picker-search')?.addEventListener('input', (e) => {
+      const activeGroup = document.querySelector('#picker-muscle-chips .chip-btn.active')?.getAttribute('data-group') || 'ALL';
+      this.renderExercisePickerList(activeGroup, e.target.value);
+    });
+    document.querySelectorAll('#picker-muscle-chips .chip-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#picker-muscle-chips .chip-btn').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        this.renderExercisePickerList(chip.getAttribute('data-group'), document.getElementById('input-picker-search').value);
+      });
+    });
+
+    // Criar / Editar Rotina
+    document.getElementById('btn-modal-new-routine')?.addEventListener('click', () => this.openNewRoutineModal());
+    document.getElementById('btn-add-exercise-to-routine-select')?.addEventListener('click', () => {
+      this.openSelectExerciseModal(ex => {
+        this.editingRoutineExerciseIds.push(ex.id);
+        this.renderRoutineSelectedExercises();
+      }, 'Escolher Exercício para a Rotina');
+    });
+    document.getElementById('form-routine')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('form-routine-id').value || null;
+      const name = document.getElementById('form-routine-name').value.trim();
+      const focus = document.getElementById('form-routine-focus').value.trim();
+      if (!name) return alert('Por favor, informe o nome do treino.');
+      if (this.editingRoutineExerciseIds.length === 0) return alert('Adicione pelo menos um exercício à rotina.');
+
+      db.saveRoutine({
+        id: id,
+        name: name,
+        muscleFocus: focus,
+        exerciseIds: this.editingRoutineExerciseIds
+      });
+      document.getElementById('modal-routine-form').classList.add('hidden');
+      this.renderRoutinesManagement();
+      this.renderHome();
+      alert('Rotina salva com sucesso!');
+    });
+
+    // Editar Treino Concluído do Histórico
+    document.getElementById('btn-add-ex-to-history-edit')?.addEventListener('click', () => {
+      if (!this.editingHistorySession) return;
+      this.openSelectExerciseModal(ex => {
+        const newEntry = {
+          exerciseId: ex.id,
+          exerciseName: ex.name,
+          muscleGroup: ex.muscleGroup,
+          sets: [{
+            setId: 'set-' + Date.now() + '-' + Math.random().toString(36).substring(2,5),
+            setNumber: 1,
+            weight: 0,
+            reps: 10,
+            completed: true
+          }]
+        };
+        this.editingHistorySession.exerciseEntries.push(newEntry);
+        this.renderEditHistoryExercises();
+      }, 'Adicionar Exercício ao Treino Registrado');
+    });
+
+    document.getElementById('form-edit-history')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!this.editingHistorySession) return;
+      const routineName = document.getElementById('edit-history-routine-name').value.trim();
+      const datetimeVal = document.getElementById('edit-history-datetime').value;
+      if (!routineName) return alert('Informe o nome do treino.');
+      if (!datetimeVal) return alert('Informe a data e horário do treino.');
+
+      this.editingHistorySession.routineName = routineName;
+      const isoDate = new Date(datetimeVal).toISOString();
+      this.editingHistorySession.endTime = isoDate;
+      this.editingHistorySession.startTime = isoDate;
+
+      db.updateHistoryWorkout(this.editingHistorySession);
+      document.getElementById('modal-edit-history').classList.add('hidden');
+      this.editingHistorySession = null;
+      this.renderHistory();
+      this.renderDashboard();
+      this.renderHome();
+      alert('Treino atualizado com sucesso!');
+    });
+
+    // Abas de Histórico (Lista / Calendário)
     document.getElementById('btn-tab-list')?.addEventListener('click', () => { document.getElementById('btn-tab-list').classList.add('active'); document.getElementById('btn-tab-calendar').classList.remove('active'); document.getElementById('history-list-container').classList.remove('hidden'); document.getElementById('history-calendar-container').classList.add('hidden'); });
     document.getElementById('btn-tab-calendar')?.addEventListener('click', () => { document.getElementById('btn-tab-calendar').classList.add('active'); document.getElementById('btn-tab-list').classList.remove('active'); document.getElementById('history-calendar-container').classList.remove('hidden'); document.getElementById('history-list-container').classList.add('hidden'); });
+
+    // Timer e configurações
     document.getElementById('btn-timer-add30')?.addEventListener('click', () => restTimer.addTime(30));
     document.getElementById('btn-timer-stop')?.addEventListener('click', () => restTimer.stop());
     document.getElementById('select-unit')?.addEventListener('change', (e) => { const s = db.getSettings(); s.weightUnit = e.target.value; db.saveSettings(s); });
@@ -1297,6 +1824,8 @@ const App = {
     document.getElementById('btn-export-history-csv')?.addEventListener('click', () => backupService.exportHistoryCSV());
     document.getElementById('input-import-backup-json')?.addEventListener('change', (e) => { const f = e.target.files[0]; if (f) backupService.importJSONFile(f, () => { alert('Backup importado!'); location.reload(); }, (err) => alert('Erro: ' + err)); });
     document.getElementById('btn-reset-database')?.addEventListener('click', () => { if (confirm('Apagar todos os dados locais?')) { db.resetAllData(); location.reload(); } });
+
+    // IA Entrada Rápida
     document.getElementById('btn-ai-parse')?.addEventListener('click', () => {
       const parsed = aiAssistant.parseText(document.getElementById('input-ai-text').value);
       if (!parsed) return alert('Digite os exercícios: "Supino 4x10 40kg"');
@@ -1322,6 +1851,7 @@ const App = {
       db.saveWorkoutToHistory({ id: 'session-' + Date.now(), routineId: 'ai-direct', routineName: this.currentAIParsed.title, startTime: new Date().toISOString(), endTime: new Date().toISOString(), durationSeconds: 1800, status: 'completed', exerciseEntries: this.currentAIParsed.exercises.map(ex => ({ exerciseId: ex.exerciseId, exerciseName: ex.exerciseName, muscleGroup: ex.muscleGroup, sets: ex.sets })) });
       alert('Registrado no histórico!'); this.switchView('view-history');
     });
+
     const triggerInst = () => { if (this.deferredInstallPrompt) { this.deferredInstallPrompt.prompt(); this.deferredInstallPrompt = null; } else document.getElementById('modal-install-instructions')?.classList.remove('hidden'); };
     document.getElementById('btn-install-pwa')?.addEventListener('click', triggerInst);
     document.getElementById('btn-install-pwa-settings')?.addEventListener('click', triggerInst);

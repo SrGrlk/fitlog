@@ -1,6 +1,5 @@
 {
-  "id": "/creatio-app",
-  "name": "Creatio",
+  "name": "Creatio — Log Book",
   "short_name": "Creatio",
   "description": "Creatio — Log Book de Musculação Underground 100% Offline.",
   "start_url": "./index.html",
